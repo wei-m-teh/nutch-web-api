@@ -1,6 +1,5 @@
 #!/bin/bash -p
-
-echo "start..."
-sleep 5
-echo "done!"
-exit 1
+echo "first argument is: $1"
+echo "second argument is: $2"
+echo "third argument is: $3"
+echo "JAVA_HOME is : $JAVA_HOME"

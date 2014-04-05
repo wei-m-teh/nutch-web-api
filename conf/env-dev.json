@@ -1,0 +1,6 @@
+{
+	"NUTCH_HOME" : "/Users/monsanto/dev/projects/java/nutch/runtime/local",
+	"JAVA_HOME" : "/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home",
+	"NUTCH_OPTS" : "-Djdbc.username=tps_admin -Djdbc.password=tps_admin -Djdbc.url=jdbc:mysql://local.monsanto.com/marketplace",
+	"SEED_DIR" : "/tmp"
+}
