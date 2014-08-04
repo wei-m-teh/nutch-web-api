@@ -26,7 +26,8 @@ server = restify.createServer { name: 'nutch-web-api' }
 server.use restify.bodyParser()
 server.use restify.queryParser()
 
+nconf.set 'server.url', server.url
 router.route server
 
-server.listen process.env.PORT || 3000, process.env.IP | "0.0.0.0", () ->
+server.listen process.env.PORT || 3000, process.env.IP || "localhost", () ->
   console.log '%s listening at %s', server.name, server.url

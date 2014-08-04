@@ -1,5 +1,7 @@
 restify = require 'restify'
-db = require '../repositories/seeds.coffee'
+nconf = require 'nconf'
+urlResolver = require('url')
+db = require '../repositories/db.coffee'
 
 remove = (req, res, next) ->
 	id = req.params.id
@@ -33,10 +35,15 @@ create = (req, res, next) ->
 	data.url = url
 	db.seeds.insert data , (err, doc) ->
 		if err
-			InternalError "Internal Server Error."
+			next new restify.InternalError("Internal Server Error. " + err.errorType)
 		newUrl = {}
 		newUrl.id = doc._id
 		newUrl.url = doc.url
+		locationUrl = {}
+		locationUrl.protocol = 'http:'
+		locationUrl.host = req.headers.host
+		locationUrl.pathname = req.url + '/' + newUrl.id
+		res.header "Location",  urlResolver.format locationUrl
 		res.status 201
 		res.send newUrl
 		next()
