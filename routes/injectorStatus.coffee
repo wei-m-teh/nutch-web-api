@@ -3,8 +3,8 @@ nconf = require 'nconf'
 urlResolver = require('url')
 db = require '../repositories/db.coffee'
 
-get = (req, res, next) ->
-	db.injectorStatus.find {}, (err, docs) ->
+getAll = (req, res, next) ->
+	db.get('injectorStatus').find {}, (err, docs) ->
 		if err
 			next new restify.InternalError("Internal Server Error. " + err.errorType)
 		jobStatuses = []
@@ -19,4 +19,21 @@ get = (req, res, next) ->
 		res.send jobStatuses
 		next()
 
+
+get = (req, res, next) ->
+	id = req.params.id
+	getParams = {}
+	getParams.crawlId = id
+	db.get('injectorStatus').find getParams, (err, docs) ->
+		if err || docs.length < 1
+			next new restify.ResourceNotFoundError 'resource with id: ' + id + ' cannot be found'
+		injector = {}
+		injector.identifier = docs[0].crawlId
+		injector.status = docs[0].status
+		injector.date = docs[0].date
+		res.status 200
+		res.send injector
+		next()
+
+exports.getAll = getAll
 exports.get = get

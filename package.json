@@ -1,11 +1,12 @@
 {
-  "name": "chat-example",
-  "version": "0.0.0",
-  "description": "A chat example to showcase how to use `socket.io` with a static `express` server",
-  "main": "server.js",
-  "repository": "",
-  "author": "Mostafa Eweda <mostafa@c9.io>",
+  "name": "nutch-web-api",
+  "version": "1.0.0",
+  "description": "Web API for Apache Nutch application",
+  "main": "server.coffee",
+  "repository": "https://github.com/wei-m-teh/nutch-web-api.git",
+  "author": "Wei Teh <wei.m.teh@gmail.com>",
   "dependencies": {
-    "restify": "~2.6.1"
+    "restify": "~2.6.1",
+    "sleep": "^1.1.8"
   }
 }

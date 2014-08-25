@@ -2,5 +2,8 @@
 	"NUTCH_HOME" : "/Users/monsanto/dev/projects/java/nutch/nutch-2.2.1/runtime/local",
 	"JAVA_HOME" : "/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home",
 	"NUTCH_OPTS" : "-Djdbc.username=tps_admin -Djdbc.password=tps_admin -Djdbc.url=jdbc:mysql://local.tps.standalone.com/marketplace",
-	"SEED_DIR" : "/tmp"
+	"SEED_DIR" : "/tmp",
+	"DATA_DIR" : "/tmp/dev",
+	"SERVER_HOST" : "localhost",
+	"SERVER_PORT" : "3000"
 }

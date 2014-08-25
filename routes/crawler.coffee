@@ -20,11 +20,11 @@ commonOptions='-D mapred.reduce.tasks=' + numTasks + '-D mapred.child.java.opts=
 inject = (req, res, next) ->
 	if !req.body 
 		next new restify.InvalidArgumentError("request body not found")	
-	transformed = JSON.parse req.body
-	if !transformed.identifier
+	
+	identifier = req.body.identifier
+	if !identifier
 		next new restify.InvalidArgumentError("identifier not found")
 
-	identifier = transformed.identifier
 	nutchHome = nconf.get 'NUTCH_HOME'
 	javaHome = nconf.get 'JAVA_HOME'
 	seedDir = nconf.get 'SEED_DIR'
@@ -41,7 +41,7 @@ inject = (req, res, next) ->
 		seedDir = '/tmp'
 
 	populateSeeds = (callback) ->
-		db.seeds.find {}, (err, docs) ->
+		db.get('seeds').find {}, (err, docs) ->
 			stream = fs.createWriteStream seedDir + "/seed.txt"
 			for i, doc of docs
 				stream.write doc.url + "\n"
@@ -54,7 +54,7 @@ inject = (req, res, next) ->
 		queryParam.crawlId = identifier
 		sortByDate = {}
 		sortByDate.date = -1
-		db.injectorStatus.find(queryParam).sort(sortByDate).exec (err, docs)->
+		db.get('injectorStatus').find(queryParam).sort(sortByDate).exec (err, docs)->
 			if docs.length > 0
 				latestJobStatus = docs[0].status
 			else
@@ -72,7 +72,7 @@ inject = (req, res, next) ->
 		data.crawlId = identifier
 		data.status = 0
 		data.date = Date.now()
-		db.injectorStatus.update finderData, data, options, (err, num, doc) ->
+		db.get('injectorStatus').update finderData, data, options, (err, num, doc) ->
 			if err
 				callback new restify.InternalError("Internal Server Error. " + err.errorType)
 			else
@@ -96,7 +96,6 @@ inject = (req, res, next) ->
 	kickoffJob = (err, result) ->
 		if err
 			next err
-
 		workingDir = nutchHome + '/bin'	
 		options = {}
 		options.cwd = workingDir
@@ -121,7 +120,7 @@ inject = (req, res, next) ->
 			winston.error 'stderr: ' + data
 			newStatus.status = -1
 			newStatus.date = Date.now()
-			db.injectorStatus.update finderData, updateData, {}, (err, numReplaced) ->
+			db.get('injectorStatus').update finderData, updateData, {}, (err, numReplaced) ->
 				if err
 					winston.error 'unable to update injector status'
 			return
@@ -133,9 +132,10 @@ inject = (req, res, next) ->
 			else 
 				newStatus.status = -1
 			updateData.$set = newStatus
-			db.injectorStatus.update finderData, updateData, {}, (err, numReplaced) ->
+			db.get('injectorStatus').update finderData, updateData, {}, (err, numReplaced) ->
 				if err
 					winston.error 'unable to update injector status'
+				console.log 'UPDATED status to:' + newStatus.status 
 			return
 		next()
 
