@@ -8,6 +8,5 @@
   "dependencies": {
     "restify": "~2.6.1",
     "sleep": "^1.1.8",
-    "tingodb": "^0.2.2"
   }
 }
