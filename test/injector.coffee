@@ -21,10 +21,13 @@ restClientConfig.url = urlResolver.format serverUrl
 client = restify.createJsonClient restClientConfig
 
 before (done) ->
-	console.log 'Before is called'
-	db.get('injectorStatus').remove {}, {multi:true} 	
+	db.get('nutchStatus').remove {}, {multi:true} 	
 	db.get('seeds').remove {}, {multi:true} 	
 	done()
+
+afterEach () ->
+			db.get('nutchStatus').remove {}, {multi:true} 	
+			db.get('seeds').remove {}, {multi:true}	
 
 describe '/crawler/inject', () ->
 	describe 'POST /crawler/inject', () ->
@@ -39,16 +42,15 @@ describe '/crawler/inject', () ->
 			client.post '/crawler/inject', body, (err, req, res, data) ->
 				if err
 					done(err)
+					return
 				expect(res.statusCode).to.equal(202)
-				client.get '/injector-status/' + body.identifier,  (err, req, res, data) ->
+				client.get '/nutch-status' + '?identifier=' + body.identifier + '&jobName=' + db.jobStatus.INJECTOR,  (err, req, res, data) ->
 					if err 
 						done(err)
+						return
 					expect(data).to.exist
 					done()
-		after () ->
-			db.get('injectorStatus').remove {}, {multi:true} 	
-			db.get('seeds').remove {}, {multi:true}	
-
+		
 describe '/crawler/inject', () ->
 	describe 'POST /crawler/inject', () ->
 		before (done) ->
@@ -61,10 +63,8 @@ describe '/crawler/inject', () ->
 			body = {}
 			client.post '/crawler/inject', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(409)
+				expect(err.restCode).to.equal('InvalidArgument')
 				done()
-		after () ->
-			db.get('injectorStatus').remove {}, {multi:true} 	
-			db.get('seeds').remove {}, {multi:true}	
 
 describe '/crawler/inject', () ->
 	describe 'POST /crawler/inject', () ->
@@ -77,23 +77,19 @@ describe '/crawler/inject', () ->
 					done(err)			
 			injectorStatus = {}
 			injectorStatus.status = 0
-			injectorStatus.crawlId = id
+			injectorStatus.identifier = id
+			injectorStatus.jobName = db.jobStatus.INJECTOR
 			injectorStatus.date = Date.now()
-			db.get('injectorStatus').insert injectorStatus, (err, doc) ->
-				if err
-					done(err)
-				done()
-
+			db.get('nutchStatus').insert injectorStatus, (err, doc) ->
+				done(err)
+				
 		it 'should NOT submit injector job successfully, when another injector job is in progress', (done) ->
 			body = {}
 			body.identifier = id
 			client.post '/crawler/inject', body, (err, req, res, data) ->
-				expect(res.statusCode).to.equal(500)
+				expect(res.statusCode).to.equal(409)
+				expect(err.restCode).to.equal('InvalidArgument')
 				done()
-
-		after () ->
-			db.get('injectorStatus').remove {}, {multi:true} 	
-			db.get('seeds').remove {}, {multi:true}	
 
 # TODO
 # Find a way to effectively capture the status of the injector after job has been submitted. 

@@ -7,6 +7,7 @@
   "author": "Wei Teh <wei.m.teh@gmail.com>",
   "dependencies": {
     "restify": "~2.6.1",
-    "sleep": "^1.1.8"
+    "sleep": "^1.1.8",
+    "tingodb": "^0.2.2"
   }
 }
