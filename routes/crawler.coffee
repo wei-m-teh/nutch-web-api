@@ -3,7 +3,7 @@ injector = require './injector.coffee'
 generator = require './generator.coffee'
 fetcher = require './fetcher.coffee'
 parser = require './parser.coffee'
-updatedb = require './updatedb.coffee'
+dbUpdater = require './dbUpdater.coffee'
 solrIndexer = require './solrIndexer.coffee'
 
 inject = (req, res, next) ->
@@ -32,7 +32,7 @@ parse = (req, res, next) ->
 
 updateDb = (req, res, next) ->
 	identifier = extractIdentifier req, next
-	updatedb.update identifier, res, next
+	dbUpdater.update identifier, res, next
 	return
 
 solrIndex = (req, res, next) ->	

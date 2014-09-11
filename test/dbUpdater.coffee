@@ -5,19 +5,8 @@ urlResolver = require('url')
 expect = require('chai').expect
 should = require('chai').should()
 db = require '../repositories/db.coffee'
-
-hostname = nconf.get 'SERVER_HOST'
-port = nconf.get 'SERVER_PORT'
-serverUrl = {}
-serverUrl.protocol = 'http'
-serverUrl.hostname = hostname
-serverUrl.port = port
-
-# init the test client
-restClientConfig = {}
-restClientConfig.version = '*'
-restClientConfig.url = urlResolver.format serverUrl
-client = restify.createJsonClient restClientConfig
+helper = require './helper.coffee'
+client = helper.getClient()
 
 before (done) ->
 	db.get('nutchStatus').remove {}, {multi:true}
