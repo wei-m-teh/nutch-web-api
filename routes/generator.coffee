@@ -12,9 +12,10 @@ generate = (identifier, batchId, res, next) ->
 	kickoffJob = (err, result) ->
 		if err
 			next err
-		jobParams  = populateGeneratorOptionsAndArguments identifier batchId
-		nutchCommons.executeJob jobParams, identifier, db.jobStatus.GENERATOR
-		next()
+		else 
+			jobParams  = populateGeneratorOptionsAndArguments identifier, batchId
+			nutchCommons.executeJob jobParams, identifier, db.jobStatus.GENERATOR
+			next()
 
 	processJob = (err) ->
 		if err
@@ -24,6 +25,8 @@ generate = (identifier, batchId, res, next) ->
 	async.series [ processJobStatus ], processJob
 
 populateGeneratorOptionsAndArguments = (identifier, batchId) ->
+	numSlaves = 1
+	sizeFetchList = numSlaves * 50000
 	addDays = 0
 	configuration = nutchCommons.configureEnvironment()
 	options = {}
@@ -32,7 +35,7 @@ populateGeneratorOptionsAndArguments = (identifier, batchId) ->
 	processArgs.push 'generate'
 	processArgs.push nutchCommons.commonOptions
 	processArgs.push '-topN' 
-	processArgs.push sizeFetchlist
+	processArgs.push sizeFetchList
 	processArgs.push '-noNorm'
 	processArgs.push '-noFilter'
 	processArgs.push '-addDays'

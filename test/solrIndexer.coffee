@@ -39,7 +39,7 @@ describe '/crawler/solr-index', () ->
 
 describe '/crawler/solr-index', () ->
 	describe 'POST /crawler/solr-index', () ->
-		id = 'testSolrIndex'
+		id = 'solrIndex.InProgress'
 		before (done) ->
 			jobStatusToUpdate = {}
 			jobStatusToUpdate.jobName = db.jobStatus.SOLRINDEX

@@ -7,61 +7,72 @@ dbUpdater = require './dbUpdater.coffee'
 solrIndexer = require './solrIndexer.coffee'
 
 inject = (req, res, next) ->
-	identifier = extractIdentifier req, next
-	injector.inject identifier, res, next
-	return
+	extractIdentifier req, (identifier, err) ->
+		if err
+			next err
+		else
+			injector.inject identifier, res, next
 
 generate = (req, res, next) ->
-	identifier = extractIdentifier req, next
-	batchId = extractBatchId req
-	generator.generate identifier, batchId, res, next
-	return
+	extractIdentifier req, (identifier, err) ->
+		if err
+			next err
+		else
+			extractBatchId req, (batchId) ->
+				generator.generate identifier, batchId, res, next
 
 fetch = (req, res, next) ->
-	identifier = extractIdentifier req, next
-	batchId = extractBatchId req
-	fetcher.fetch identifier, batchId, res, next
-	return
-
+	extractIdentifier req, (identifier, err) ->
+		if err
+			next err
+		else 
+			extractBatchId req, (batchId) ->
+				fetcher.fetch identifier, batchId, res, next
 
 parse = (req, res, next) ->
-	identifier = extractIdentifier req, next
-	batchId = extractBatchId req
-	parser.parse identifier, batchId, res, next
-	return
+	extractIdentifier req, (identifier, err) ->
+		if err
+			next err
+		else
+			extractBatchId req, (batchId) ->
+				parser.parse identifier, batchId, res, next
 
 updateDb = (req, res, next) ->
-	identifier = extractIdentifier req, next
-	dbUpdater.update identifier, res, next
-	return
+	extractIdentifier req, (identifier, err) ->
+		if err
+			next err
+		else
+			dbUpdater.update identifier, res, next
 
 solrIndex = (req, res, next) ->	
-	identifier = extractIdentifier req, next
-	solrIndexer.index identifier, res, next
-	return
+	extractIdentifier req, (identifier, err) ->
+		if err
+			next err	
+		else
+			solrIndexer.index identifier, res, next
 
 solrDeleteDuplicates = (req, res, next) ->
 	solrIndexer.deleteDuplicates res, next
-	return
 
 extractIdentifier = (req, next) ->
 	if !req.body 
-		next new restify.InvalidArgumentError("request body not found")
+		next null, new restify.InvalidArgumentError("request body not found")
 		return	
 	
 	identifier = req.body.identifier
 	if !identifier
-		next new restify.InvalidArgumentError("identifier not found")
+		next null, new restify.InvalidArgumentError("identifier not found")
 		return
-	identifier
+	next identifier, null
 
-extractBatchId = (req) ->
+extractBatchId = (req, next) ->
 	if req.body 
 		batchId = req.body.batchId
 		if !batchId
 			batchId = generateBatchId()
 	else 
-		generateBatchId()
+		batchId = generateBatchId()
+	next batchId
 
 generateBatchId = () ->
 	now = new Date()

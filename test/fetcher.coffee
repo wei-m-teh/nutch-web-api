@@ -6,15 +6,15 @@ expect = require('chai').expect
 should = require('chai').should()
 db = require '../repositories/db.coffee'
 helper = require './helper.coffee'
+nutchCommons = require '../routes/nutchCommons.coffee'
 client = helper.getClient()
+socket =
 
-before (done) ->
+before () ->
 	db.get('nutchStatus').remove {}, {multi:true}
-	done()
 
-afterEach (done) ->
+afterEach () ->
 	db.get('nutchStatus').remove {}, {multi:true} 
-	done()
 
 describe '/crawler/fetch', () ->
 	describe 'POST /crawler/fetch successfully', () ->
@@ -39,7 +39,7 @@ describe '/crawler/fetch', () ->
 
 describe '/crawler/fetch', () ->
 	describe 'POST /crawler/fetch', () ->
-		id = 'testFetcher'
+		id = 'testFetcher.inProgress'
 		before (done) ->
 			fetcherStatus = {}
 			fetcherStatus.jobName = db.jobStatus.FETCHER
@@ -56,3 +56,50 @@ describe '/crawler/fetch', () ->
 				expect(res.statusCode).to.equal(409)
 				expect(err.restCode).to.equal('InvalidArgument')
 				done()
+
+describe 'POST /crawler/fetch', () ->
+	helper.extendDefaultTimeout this
+	id = 'fetcher.success'
+	before () ->
+		socket = helper.getIo()
+	
+	it 'should complete fetcher job successfully, and nutch job status updated to reflect the SUCCESS status', (done) ->
+		body = {}
+		body.identifier = id
+		socket.on helper.nutchJobStatus, (msg) ->
+			# Since Socket IO emits message to all clients, we are only 
+			# interested in the message that corresponds to our test case,
+			# hence the test verification is done only if the message has the
+			# same id sent for the nutch process.
+			if (msg.id is id)
+				expect(msg.status).to.equal(db.jobStatus.SUCCESS)
+				nutchCommons.findLatestJobStatus id, db.jobStatus.FETCHER, (status) ->
+					expect(status).to.equal(db.jobStatus.SUCCESS)
+					done()
+
+		client.post '/crawler/fetch', body, (err, req, res, data) ->
+			expect(res.statusCode).to.equal(202)
+
+describe 'POST /crawler/generate', () ->
+	helper.extendDefaultTimeout this
+	id = 'fetcher.failure'
+	before () ->
+		socket = helper.getIo()
+	
+	it 'should fail fetcher job, and nutch job status updated to reflect the FAILURE status', (done) ->
+		body = {}
+		body.identifier = id
+		socket.on helper.nutchJobStatus, (msg) ->
+			# Since Socket IO emits message to all clients, we are only 
+			# interested in the message that corresponds to our test case,
+			# hence the test verification is done only if the message has the
+			# same id sent for the nutch process.
+			if (msg.id is id)
+				expect(msg.status).to.equal(db.jobStatus.FAILURE)
+				nutchCommons.findLatestJobStatus id, db.jobStatus.FETCHER, (status) ->
+					expect(status).to.equal(db.jobStatus.FAILURE)
+					done()
+
+		client.post '/crawler/parse', body, (err, req, res, data) ->
+			expect(res.statusCode).to.equal(202)
+

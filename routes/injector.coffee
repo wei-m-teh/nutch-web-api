@@ -1,6 +1,7 @@
 async = require 'async'
 db = require '../repositories/db.coffee'
 nutchCommons = require './nutchCommons.coffee'
+server = require '../server.coffee'
 
 inject = (identifier, res, next) ->
 	processJobStatus = (callback) ->
@@ -12,7 +13,7 @@ inject = (identifier, res, next) ->
 	kickoffJob = (err, result) ->
 		if err
 			next err
-		jobParams  = populateInjectorOptionsAndArguments
+		jobParams  = populateInjectorOptionsAndArguments identifier
 		nutchCommons.executeJob jobParams, identifier, db.jobStatus.INJECTOR
 		next()
 

@@ -7,5 +7,6 @@ nconf.file { file : './conf/env-test.json' }
 		.argv().env()
 
 before (done) ->
+	console.log 'BEFORE START SERVER'
 	server.startServer()
 	done()

@@ -9,7 +9,7 @@ var toArray = require('to-array');
 var on = require('./on');
 var bind = require('component-bind');
 var debug = require('debug')('socket.io-client:socket');
-var hasBin = require('has-binary-data');
+var hasBin = require('has-binary');
 var indexOf = require('indexof');
 
 /**
@@ -56,7 +56,7 @@ function Socket(io, nsp){
   this.json = this; // compat
   this.ids = 0;
   this.acks = {};
-  this.open();
+  if (this.io.autoConnect) this.open();
   this.receiveBuffer = [];
   this.sendBuffer = [];
   this.connected = false;

@@ -7,7 +7,7 @@ should = require('chai').should()
 db = require '../repositories/db.coffee'
 helper = require './helper.coffee'
 client = helper.getClient()
-
+ 
 before (done) ->
 	db.get('nutchStatus').remove {}, {multi:true}
 	done()
@@ -15,6 +15,7 @@ before (done) ->
 afterEach (done) ->
 	db.get('nutchStatus').remove {}, {multi:true} 
 	done()
+
 
 describe '/crawler/updateDb', () ->
 	describe 'POST /crawler/updateDb successfully', () ->

@@ -1,4 +1,5 @@
 async = require 'async'
+nconf = require 'nconf'
 db = require '../repositories/db.coffee'
 nutchCommons = require './nutchCommons.coffee'
 

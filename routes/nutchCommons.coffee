@@ -3,6 +3,7 @@ spawn = require('child_process').spawn
 nconf = require 'nconf'
 winston = require 'winston'
 db = require '../repositories/db.coffee'
+server = require '../server.coffee'
 fs = require 'fs'
 
 # set the number of slaves nodes
@@ -13,7 +14,7 @@ NUTCH_APP_NAME = 'nutch'
 
 commonOptions='-D mapred.reduce.tasks=' + numTasks + '-D mapred.child.java.opts=-Xmx1000m -D mapred.reduce.tasks.speculative.execution=false -D mapred.map.tasks.speculative.execution=false -D mapred.compress.map.output=true'
 
-updateJobStatus = (identifier, jobStatus, jobName) ->
+updateJobStatus = (identifier, jobStatus, jobName, next) ->
 	newStatus = {}
 	newStatus.status = jobStatus
 	newStatus.date = Date.now()
@@ -25,7 +26,7 @@ updateJobStatus = (identifier, jobStatus, jobName) ->
 	db.get('nutchStatus').update finderData, updateData, {}, (err, numReplaced) ->
 		if err
 			winston.error 'unable to update job status' 
-
+		next err
 populateSeeds = (callback) ->
 	if !seedDir
 		seedDir = '/tmp'
@@ -40,20 +41,7 @@ populateSeeds = (callback) ->
 
 
 populateJobStatus = (identifier, jobName, callback) ->
-	queryParam = {}
-	queryParam.identifier = identifier
-	queryParam.jobName = jobName
-	sortByDate = {}
-	sortByDate.date = -1
-	latestJobStatus = -99
-	db.get('nutchStatus').find(queryParam).sort(sortByDate).exec (err, docs)->
-		if docs.length > 0
-			latestJobStatus = docs[0].status
-		else
-			latestJobStatus = db.jobStatus.FAILURE
-		addJobStatus callback
-	
-	addJobStatus = (callback) ->
+	addJobStatus = (latestJobStatus) ->
 		if latestJobStatus isnt db.jobStatus.FAILURE and latestJobStatus isnt db.jobStatus.SUCCESS
 			callback new restify.InvalidArgumentError('Job cannot be submitted at this time. The job for this identifier is in progress.')
 		finderData = {}
@@ -72,6 +60,23 @@ populateJobStatus = (identifier, jobName, callback) ->
 			else
 				callback null
 
+	findLatestJobStatus identifier, jobName, addJobStatus
+	return
+
+findLatestJobStatus = (identifier, jobName, next) ->
+	queryParam = {}
+	queryParam.identifier = identifier
+	queryParam.jobName = jobName
+	sortByDate = {}
+	sortByDate.date = -1
+	latestJobStatus = -99
+	db.get('nutchStatus').find(queryParam).sort(sortByDate).exec (err, docs)->
+		if docs.length > 0
+			latestJobStatus = docs[0].status
+		else
+			latestJobStatus = db.jobStatus.FAILURE
+		next latestJobStatus
+
 submitHttpResponse = (identifier, res, callback) ->
 	response = {}
 	response.message =  "injector job submitted successfully"
@@ -82,7 +87,11 @@ submitHttpResponse = (identifier, res, callback) ->
 	callback null
 
 executeJob = (jobParams, identifier, jobName) ->
-	jobExecutor = spawn NUTCH_APP_NAME, jobParams.processArgs, jobParams.options
+	console.log "executing #{jobName} for #{identifier}"
+	jobExecutor = spawn NUTCH_APP_NAME, jobParams.arguments, jobParams.options
+	ioJobStatus = {}
+	ioJobStatus.name = jobName
+	ioJobStatus.id = identifier
 	jobExecutor.stdout.on 'data', (data) ->
 		winston.info data + '\n'
 		return
@@ -94,11 +103,10 @@ executeJob = (jobParams, identifier, jobName) ->
 
 	jobExecutor.on 'close', (code) ->
 		winston.info 'child process exited with code: ' + code
-		if code is 0
-			jobStatus = db.jobStatus.SUCCESS
-		else 
-			jobStatus = db.jobStatus.FAILURE
-		updateJobStatus identifier, jobStatus, jobName
+		if code is 0 then jobStatus = db.jobStatus.SUCCESS else jobStatus = db.jobStatus.FAILURE
+		updateJobStatus identifier, jobStatus, jobName, (err) ->
+			ioJobStatus.status = jobStatus
+			server.getIo().sockets.emit 'nutchJobStatus', ioJobStatus
 		return
 
 configureEnvironment = () ->
@@ -107,7 +115,7 @@ configureEnvironment = () ->
 	seedDir = nconf.get 'SEED_DIR'
 	nutchOpts = nconf.get 'NUTCH_OPTS'
 	workingDir = nutchHome + '/bin'	
-	
+
 	if !process.env.JAVA_HOME
 		process.env.JAVA_HOME = javaHome if javaHome?
 
@@ -126,3 +134,5 @@ exports.submitHttpResponse = submitHttpResponse
 exports.executeJob = executeJob
 exports.configureEnvironment = configureEnvironment
 exports.commonOptions = commonOptions
+exports.findLatestJobStatus = findLatestJobStatus
+

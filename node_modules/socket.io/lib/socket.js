@@ -108,7 +108,7 @@ Socket.prototype.buildHandshake = function(){
   return {
     headers: this.request.headers,
     time: (new Date) + '',
-    address: this.request.connection.address(),
+    address: this.conn.remoteAddress,
     xdomain: !!this.request.headers.origin,
     secure: !!this.request.connection.encrypted,
     issued: +(new Date),
@@ -242,7 +242,7 @@ Socket.prototype.leave = function(room, fn){
   this.adapter.del(this.id, room, function(err){
     if (err) return fn && fn(err);
     debug('left room %s', room);
-    self.rooms.splice(self.rooms.indexOf(room, 1));
+    self.rooms.splice(self.rooms.indexOf(room), 1);
     fn && fn(null);
   });
   return this;
@@ -256,6 +256,7 @@ Socket.prototype.leave = function(room, fn){
 
 Socket.prototype.leaveAll = function(){
   this.adapter.delAll(this.id);
+  this.rooms = [];
 };
 
 /**

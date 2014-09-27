@@ -8,5 +8,6 @@
   "dependencies": {
     "restify": "~2.6.1",
     "sleep": "^1.1.8",
+    "socket.io": "^1.1.0"
   }
 }

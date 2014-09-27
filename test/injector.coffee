@@ -1,23 +1,24 @@
 restify = require 'restify'
 nconf = require 'nconf'
 sleep = require 'sleep'
+io = require('socket.io-client')
 urlResolver = require('url')
 expect = require('chai').expect
 should = require('chai').should()
 assert = require('chai').assert
 db = require '../repositories/db.coffee'
 helper = require './helper.coffee'
+nutchCommons = require '../routes/nutchCommons.coffee'
+
 client = helper.getClient()
-
-
-before (done) ->
+ 
+before () ->
 	db.get('nutchStatus').remove {}, {multi:true} 	
 	db.get('seeds').remove {}, {multi:true} 	
-	done()
 
 afterEach () ->
-			db.get('nutchStatus').remove {}, {multi:true} 	
-			db.get('seeds').remove {}, {multi:true}	
+	db.get('nutchStatus').remove {}, {multi:true} 	
+	db.get('seeds').remove {}, {multi:true}	
 
 describe '/crawler/inject', () ->
 	describe 'POST /crawler/inject', () ->
@@ -64,7 +65,8 @@ describe '/crawler/inject', () ->
 			seed.url = 'http://test.com'
 			client.post '/seeds', seed, (err, req, res, data) ->
 				if err
-					done(err)			
+					done(err)
+					return			
 			injectorStatus = {}
 			injectorStatus.status = 0
 			injectorStatus.identifier = id
@@ -72,6 +74,7 @@ describe '/crawler/inject', () ->
 			injectorStatus.date = Date.now()
 			db.get('nutchStatus').insert injectorStatus, (err, doc) ->
 				done(err)
+				return
 				
 		it 'should NOT submit injector job successfully, when another injector job is in progress', (done) ->
 			body = {}
@@ -81,39 +84,56 @@ describe '/crawler/inject', () ->
 				expect(err.restCode).to.equal('InvalidArgument')
 				done()
 
-# TODO
-# Find a way to effectively capture the status of the injector after job has been submitted. 
-# Currently the tests setup and tear down steps wipes out all the seeds prior to running the each test,
-# therefore causing this particular step not able to retrieve the injector status when nutch job is completed.
-# describe '/crawler/inject', () ->
-# 	describe 'POST /crawler/inject', () ->
-# 		id = 'injector.success'
-# 		before () ->
-# 			seed = {}
-# 			seed.url = 'http://test.com'
-# 			client.post '/seeds', seed, (err, req, res, data) ->
-		
-# 		it 'should complete injector job successfully, and injector status updated to indicate the status to complete', (done) ->
-# 			this.timeout 6000
-# 			body = {}
-# 			body.identifier = id
-# 			client.post '/crawler/inject', body, (err, req, res, data) ->
-# 				expect(res.statusCode).to.equal(202)
-# 				sleep 5000, (done) -> 
-# 					console.log 'I AM AWAKE'
-# 					client.get '/injector-status/' + id,  (err, req, res, data) ->
-# 						if err 
-# 							done(err)
-# 						expect(data.status).to.equal(1)
-# 						done()
-				
-# 		after () ->
-# 			db.get('injectorStatus').remove {}, {multi:true} 	
-# 			db.get('seeds').remove {}, {multi:true}	
+describe 'POST /crawler/inject', () ->
+	helper.extendDefaultTimeout this
+	id = 'injector.success'
+	socket =
+	before () ->
+		socket = helper.getIo()
+		seed = {}
+		seed.url = 'http://test.com'
+		client.post '/seeds', seed, (err, req, res, data) ->
+	
+	it 'should complete injector job successfully, and injector status updated to indicate the status to complete', (done) ->
+		body = {}
+		body.identifier = id
+		socket.on helper.nutchJobStatus, (msg) ->
+			# Since Socket IO emits message to all clients, we are only 
+			# interested in the message that corresponds to our test case,
+			# hence the test verification is done only if the message has the
+			# same id sent for the nutch process.
+			if (msg.id is id)
+				expect(msg.status).to.equal(db.jobStatus.SUCCESS)
+				nutchCommons.findLatestJobStatus id, db.jobStatus.INJECTOR, (status) ->
+					expect(status).to.equal(db.jobStatus.SUCCESS)
+					done()
 
-sleep = (time, callback) ->
-	pass = undefined
-	stop = new Date().getTime()
-	while(new Date().getTime() < stop + time)
-		pass
-	callback()
+		client.post '/crawler/inject', body, (err, req, res, data) ->
+			expect(res.statusCode).to.equal(202)
+
+describe 'POST /crawler/inject', () ->
+		helper.extendDefaultTimeout this
+		id = 'injector.failure'
+		socket =
+		before () ->
+			socket = helper.getIo()
+			seed = {}
+			seed.url = 'http://test.com'
+			client.post '/seeds', seed, (err, req, res, data) ->
+		
+		it 'should fail injector job, and injector status updated to indicate the status to complete', (done) ->
+			body = {}
+			body.identifier = id
+			socket.on helper.nutchJobStatus, (msg) ->
+				# Since Socket IO emits message to all clients, we are only 
+				# interested in the message that corresponds to our test case,
+				# hence the test verification is done only if the message has the
+				# same id sent for the nutch process.
+				if (msg.id is id)
+					expect(msg.status).to.equal(db.jobStatus.FAILURE)			
+					nutchCommons.findLatestJobStatus id, db.jobStatus.INJECTOR, (status) ->
+						expect(status).to.equal(db.jobStatus.FAILURE)
+						done()
+
+			client.post '/crawler/inject', body, (err, req, res, data) ->
+				expect(res.statusCode).to.equal(202)

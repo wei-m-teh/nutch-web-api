@@ -61,7 +61,6 @@ fi
 # get arguments
 COMMAND=$1
 shift
-
 # some directories
 THIS_DIR=`dirname "$THIS"`
 NUTCH_HOME=`cd "$THIS_DIR/.." ; pwd`
@@ -76,7 +75,6 @@ else
   local=true
 fi
 
-echo "CHECKPOINT #2"
 # cygwin path translation
 if $cygwin; then
   NUTCH_JOB=`cygpath -p -w "$NUTCH_JOB"`
@@ -89,7 +87,6 @@ if [ "$COMMAND" = "crawl" ] ; then
   exit 0;
 elif [ "$COMMAND" = "inject" ] ; then
     CRAWLID=$3
-    echo "INJECT!"
     if [ "$CRAWLID" = "injector.success" ] ; then
       exit 0;
     else 
@@ -98,11 +95,29 @@ elif [ "$COMMAND" = "inject" ] ; then
 elif [ "$COMMAND" = "hostinject" ] ; then
 exit 0;
 elif [ "$COMMAND" = "generate" ] ; then
-exit 0;
+    CRAWLID=$9
+    echo $CRAWLID
+    if [ "$CRAWLID" = "generator.success" ] ; then
+      exit 0;
+    else 
+      exit 1;
+    fi
 elif [ "$COMMAND" = "fetch" ] ; then
-exit 0;
+    CRAWLID=$6
+    echo $CRAWLID
+    if [ "$CRAWLID" = "fetcher.success" ] ; then
+      exit 0;
+    else 
+      exit 1;
+    fi
 elif [ "$COMMAND" = "parse" ] ; then
-exit 0;
+    CRAWLID=$5
+    echo $CRAWLID
+    if [ "$CRAWLID" = "parser.success" ] ; then
+      exit 0;
+    else 
+      exit 1;
+    fi
 elif [ "$COMMAND" = "updatedb" ] ; then
 exit 0;
 elif [ "$COMMAND" = "updatehostdb" ] ; then
