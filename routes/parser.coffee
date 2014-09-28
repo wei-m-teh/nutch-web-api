@@ -31,13 +31,13 @@ populateParserOptionsAndArguments = (identifier, batchId) ->
 	configuration = nutchCommons.configureEnvironment()
 	options = {}
 	options.cwd = configuration.workingDir
+	#Populate java system properties for parser job
+	parserOptions = {}
+	parserOptions['mapred.skip.attempts.to.start.skipping'] = mapredSkipAttemptsToStartSkipping
+	parserOptions['mapred.skip.map.max.skip.records'] = mapredSkipMapMaxSkipRecords
 	processArgs = []
 	processArgs.push 'parse'
-	processArgs.push nutchCommons.commonOptions
-	processArgs.push '-D' 
-	processArgs.push 'mapred.skip.attempts.to.start.skipping=' + mapredSkipAttemptsToStartSkipping
-	processArgs.push '-D' 
-	processArgs.push 'mapred.skip.map.max.skip.records=' + mapredSkipMapMaxSkipRecords
+	processArgs.push  nutchCommons.populateCommonOptions(parserOptions)...
 	processArgs.push batchId
 	processArgs.push '-crawlId'
 	processArgs.push identifier

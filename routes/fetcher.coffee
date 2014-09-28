@@ -30,11 +30,14 @@ populateFetcherOptionsAndArguments = (identifier, batchId) ->
 	configuration = nutchCommons.configureEnvironment()
 	options = {}
 	options.cwd = configuration.workingDir
+
+	#Populate java system properties for fetcher job
+	fetcherOptions = {}
+	fetcherOptions['fetcher.timelimit.mins'] = timeLimitFetch
+
 	processArgs = []
 	processArgs.push 'fetch'
-	processArgs.push nutchCommons.commonOptions
-	processArgs.push '-D' 
-	processArgs.push 'fetcher.timelimit.mins=' + timeLimitFetch
+	processArgs.push nutchCommons.populateCommonOptions(fetcherOptions)...
 	processArgs.push batchId
 	processArgs.push '-crawlId'
 	processArgs.push identifier

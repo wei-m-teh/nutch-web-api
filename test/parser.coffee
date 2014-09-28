@@ -6,6 +6,7 @@ expect = require('chai').expect
 should = require('chai').should()
 db = require '../repositories/db.coffee'
 helper = require './helper.coffee'
+nutchCommons = require '../routes/nutchCommons.coffee'
 client = helper.getClient()
 socket =
 
@@ -81,27 +82,27 @@ describe 'POST /crawler/parse', () ->
 		client.post '/crawler/parse', body, (err, req, res, data) ->
 			expect(res.statusCode).to.equal(202)
 
-# describe 'POST /crawler/parse', () ->
-# 	helper.extendDefaultTimeout this
-# 	id = 'parser.failure'
-# 	before () ->
-# 		socket = helper.getIo()
+describe 'POST /crawler/parse', () ->
+	helper.extendDefaultTimeout this
+	id = 'parser.failure'
+	before () ->
+		socket = helper.getIo()
 	
-# 	it 'should fail parser job, and nutch job status updated to reflect the FAILURE status', (done) ->
-# 		body = {}
-# 		body.identifier = id
-# 		socket.on helper.nutchJobStatus, (msg) ->
-# 			# Since Socket IO emits message to all clients, we are only 
-# 			# interested in the message that corresponds to our test case,
-# 			# hence the test verification is done only if the message has the
-# 			# same id sent for the nutch process.
-# 			if (msg.id is id)
-# 				expect(msg.status).to.equal(db.jobStatus.FAILURE)
-# 				nutchCommons.findLatestJobStatus id, db.jobStatus.FETCHER, (status) ->
-# 					expect(status).to.equal(db.jobStatus.FAILURE)
-# 					done()
+	it 'should fail parser job, and nutch job status updated to reflect the FAILURE status', (done) ->
+		body = {}
+		body.identifier = id
+		socket.on helper.nutchJobStatus, (msg) ->
+			# Since Socket IO emits message to all clients, we are only 
+			# interested in the message that corresponds to our test case,
+			# hence the test verification is done only if the message has the
+			# same id sent for the nutch process.
+			if (msg.id is id)
+				expect(msg.status).to.equal(db.jobStatus.FAILURE)
+				nutchCommons.findLatestJobStatus id, db.jobStatus.FETCHER, (status) ->
+					expect(status).to.equal(db.jobStatus.FAILURE)
+					done()
 
-# 		client.post '/crawler/parse', body, (err, req, res, data) ->
-# 			expect(res.statusCode).to.equal(202)
+		client.post '/crawler/parse', body, (err, req, res, data) ->
+			expect(res.statusCode).to.equal(202)
 
 

@@ -33,7 +33,7 @@ populateGeneratorOptionsAndArguments = (identifier, batchId) ->
 	options.cwd = configuration.workingDir
 	processArgs = []
 	processArgs.push 'generate'
-	processArgs.push nutchCommons.commonOptions
+	processArgs.push nutchCommons.populateCommonOptions({})...
 	processArgs.push '-topN' 
 	processArgs.push sizeFetchList
 	processArgs.push '-noNorm'

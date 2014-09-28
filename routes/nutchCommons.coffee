@@ -12,7 +12,23 @@ numTasks = numSlaves * 2
 sizeFetchlist = numSlaves * 50000
 NUTCH_APP_NAME = 'nutch'
 
-commonOptions='-D mapred.reduce.tasks=' + numTasks + '-D mapred.child.java.opts=-Xmx1000m -D mapred.reduce.tasks.speculative.execution=false -D mapred.map.tasks.speculative.execution=false -D mapred.compress.map.output=true'
+commonOptions = {}
+commonOptions['mapred.reduce.tasks'] = numTasks
+commonOptions['mapred.child.java.opts'] = '-Xmx1000m'
+commonOptions['mapred.reduce.tasks.speculative.execution'] = 'false'
+commonOptions['mapred.map.tasks.speculative.execution'] = 'false'
+commonOptions['mapred.compress.map.output'] = 'true'
+
+populateCommonOptions = (jobOptions) ->
+	args=[]
+	for key, value of commonOptions
+		args.push '-D'
+		args.push "#{key}=#{value}"
+	
+	for key, value of jobOptions
+		args.push '-D'
+		args.push "#{key}=#{value}"
+	return args
 
 updateJobStatus = (identifier, jobStatus, jobName, next) ->
 	newStatus = {}
@@ -87,7 +103,6 @@ submitHttpResponse = (identifier, res, callback) ->
 	callback null
 
 executeJob = (jobParams, identifier, jobName) ->
-	console.log "executing #{jobName} for #{identifier}"
 	jobExecutor = spawn NUTCH_APP_NAME, jobParams.arguments, jobParams.options
 	ioJobStatus = {}
 	ioJobStatus.name = jobName
@@ -135,4 +150,5 @@ exports.executeJob = executeJob
 exports.configureEnvironment = configureEnvironment
 exports.commonOptions = commonOptions
 exports.findLatestJobStatus = findLatestJobStatus
+exports.populateCommonOptions = populateCommonOptions
 

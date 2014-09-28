@@ -95,15 +95,15 @@ elif [ "$COMMAND" = "inject" ] ; then
 elif [ "$COMMAND" = "hostinject" ] ; then
 exit 0;
 elif [ "$COMMAND" = "generate" ] ; then
-    CRAWLID=$9
-    echo $CRAWLID
+    CRAWLID=${18}
+    echo "*$CRAWLID*"
     if [ "$CRAWLID" = "generator.success" ] ; then
       exit 0;
     else 
       exit 1;
     fi
 elif [ "$COMMAND" = "fetch" ] ; then
-    CRAWLID=$6
+    CRAWLID=${15}
     echo $CRAWLID
     if [ "$CRAWLID" = "fetcher.success" ] ; then
       exit 0;
@@ -111,8 +111,8 @@ elif [ "$COMMAND" = "fetch" ] ; then
       exit 1;
     fi
 elif [ "$COMMAND" = "parse" ] ; then
-    CRAWLID=$5
-    echo $CRAWLID
+    CRAWLID=${17}
+    echo "$CRAWLID"
     if [ "$CRAWLID" = "parser.success" ] ; then
       exit 0;
     else 
