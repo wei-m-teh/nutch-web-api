@@ -2,6 +2,9 @@ restify = require 'restify'
 nconf = require 'nconf'
 urlResolver = require('url')
 io = require('socket.io-client')
+expect = require('chai').expect
+nutchCommons = require '../routes/nutchCommons.coffee'
+
 
 hostname = nconf.get 'SERVER_HOST'
 port = nconf.get 'SERVER_PORT'
@@ -25,8 +28,20 @@ getIo = () ->
 extendDefaultTimeout = (target) ->
 	target.timeout 5000
 
+verifyJobStatus = (id, msg, jobName, expectedStatus, next) ->
+	# Since Socket IO emits message to all clients, we are only 
+	# interested in the message that corresponds to our test case,
+	# hence the test verification is done only if the message has the
+	# same id sent for the nutch process.
+	if (msg.id is id)
+		expect(msg.status).to.equal(expectedStatus)			
+		nutchCommons.findLatestJobStatus id, jobName, (status) ->
+			expect(status).to.equal(expectedStatus)
+			next()
+
 exports.getClient = getClient
 exports.getIo = getIo
 exports.nutchJobStatus = 'nutchJobStatus'
 exports.extendDefaultTimeout = extendDefaultTimeout
+exports.verifyJobStatus = verifyJobStatus
 

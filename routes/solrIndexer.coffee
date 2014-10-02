@@ -35,7 +35,7 @@ deleteDuplicates = (res, next) ->
 	kickoffJob = (err, result) ->
 		if err
 			next err
-		jobParams  = populateSolrDeleteDuplicatesOptionsAndArguments
+		jobParams  = populateSolrDeleteDuplicatesOptionsAndArguments()
 		nutchCommons.executeJob jobParams, identifier, db.jobStatus.SOLRDELETEDUPS
 		next()
 
@@ -54,7 +54,7 @@ populateSolrIndexOptionsAndArguments = (identifier) ->
 	options.cwd = configuration.workingDir
 	processArgs = []
 	processArgs.push 'solrindex'
-	processArgs.push nutchCommons.commonOptions
+	processArgs.push nutchCommons.populateCommonOptions({})...
 	processArgs.push solrUrl
 	processArgs.push '-all'
 	processArgs.push '-crawlId'
@@ -72,7 +72,7 @@ populateSolrDeleteDuplicatesOptionsAndArguments = () ->
 	options.cwd = configuration.workingDir
 	processArgs = []
 	processArgs.push 'solrdedup'
-	processArgs.push nutchCommons.commonOptions
+	processArgs.push nutchCommons.populateCommonOptions({})...
 	processArgs.push solrUrl
 	jobOptions = {}
 	jobOptions.options = options

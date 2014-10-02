@@ -7,7 +7,8 @@ should = require('chai').should()
 db = require '../repositories/db.coffee'
 helper = require './helper.coffee'
 client = helper.getClient()
- 
+socket =
+
 before (done) ->
 	db.get('nutchStatus').remove {}, {multi:true}
 	done()
@@ -17,7 +18,7 @@ afterEach (done) ->
 	done()
 
 
-describe '/crawler/updateDb', () ->
+describe '/crawler/updatedb', () ->
 	describe 'POST /crawler/updateDb successfully', () ->
 		it 'should submit updateDb job successfully, resulted in 202 status code and updateDb status table populated', (done) ->
 			body = {}
@@ -40,7 +41,7 @@ describe '/crawler/updatedb', () ->
 
 describe '/crawler/updatedb', () ->
 	describe 'POST /crawler/updatedb', () ->
-		id = 'testUpdateDb'
+		id = 'testUpdateDb.inProgress'
 		before (done) ->
 			jobStatusToUpdate = {}
 			jobStatusToUpdate.jobName = db.jobStatus.UPDATEDB
@@ -57,3 +58,35 @@ describe '/crawler/updatedb', () ->
 				expect(res.statusCode).to.equal(409)
 				expect(err.restCode).to.equal('InvalidArgument')
 				done()
+
+describe 'POST /crawler/updatedb', () ->
+	helper.extendDefaultTimeout this
+	id = 'updatedb.success'
+	before () ->
+		socket = helper.getIo()
+	
+	it 'should complete updatedb job successfully, and nutch job status updated to reflect the SUCCESS status', (done) ->
+		body = {}
+		body.identifier = id
+		socket.on helper.nutchJobStatus, (msg) ->
+			helper.verifyJobStatus id, msg, db.jobStatus.UPDATEDB, db.jobStatus.SUCCESS, () ->
+				done()
+
+		client.post '/crawler/updatedb', body, (err, req, res, data) ->
+			expect(res.statusCode).to.equal(202)
+
+describe 'POST /crawler/updatedb', () ->
+	helper.extendDefaultTimeout this
+	id = 'updatedb.failure'
+	before () ->
+		socket = helper.getIo()
+	
+	it 'should fail fetcher job, and nutch job status updated to reflect the FAILURE status', (done) ->
+		body = {}
+		body.identifier = id
+		socket.on helper.nutchJobStatus, (msg) ->
+			helper.verifyJobStatus id, msg, db.jobStatus.UPDATEDB, db.jobStatus.FAILURE, () ->
+				done()
+
+		client.post '/crawler/updatedb', body, (err, req, res, data) ->
+			expect(res.statusCode).to.equal(202)

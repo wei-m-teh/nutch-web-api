@@ -7,7 +7,8 @@ should = require('chai').should()
 db = require '../repositories/db.coffee'
 helper = require './helper.coffee'
 client = helper.getClient()
-
+socket = 
+	
 before (done) ->
 	db.get('nutchStatus').remove {}, {multi:true}
 	done()
@@ -56,3 +57,36 @@ describe '/crawler/solr-index', () ->
 				expect(res.statusCode).to.equal(409)
 				expect(err.restCode).to.equal('InvalidArgument')
 				done()
+
+describe 'POST /crawler/solr-index', () ->
+	helper.extendDefaultTimeout this
+	id = 'solrindex.success'
+	before () ->
+		socket = helper.getIo()
+	
+	it 'should complete solr-index job successfully, and nutch job status updated to reflect the SUCCESS status', (done) ->
+		body = {}
+		body.identifier = id
+		socket.on helper.nutchJobStatus, (msg) ->
+			helper.verifyJobStatus id, msg, db.jobStatus.SOLRINDEX, db.jobStatus.SUCCESS, () ->
+				done()
+
+		client.post '/crawler/solr-index', body, (err, req, res, data) ->
+			expect(res.statusCode).to.equal(202)
+
+describe 'POST /crawler/solr-index', () ->
+	helper.extendDefaultTimeout this
+	id = 'solr-index.failure'
+	before () ->
+		socket = helper.getIo()
+	
+	it 'should fail solr-index job, and nutch job status updated to reflect the FAILURE status', (done) ->
+		body = {}
+		body.identifier = id
+		socket.on helper.nutchJobStatus, (msg) ->
+			helper.verifyJobStatus id, msg, db.jobStatus.SOLRINDEX, db.jobStatus.FAILURE, () ->
+				done()
+
+		client.post '/crawler/solr-index', body, (err, req, res, data) ->
+			expect(res.statusCode).to.equal(202)
+

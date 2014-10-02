@@ -8,7 +8,6 @@ should = require('chai').should()
 assert = require('chai').assert
 db = require '../repositories/db.coffee'
 helper = require './helper.coffee'
-nutchCommons = require '../routes/nutchCommons.coffee'
 
 client = helper.getClient()
  
@@ -59,7 +58,7 @@ describe '/crawler/inject', () ->
 
 describe '/crawler/inject', () ->
 	describe 'POST /crawler/inject', () ->
-		id = 'testInjector'
+		id = 'testInjector.inprogress'
 		before (done) ->
 			seed = {}
 			seed.url = 'http://test.com'
@@ -98,15 +97,8 @@ describe 'POST /crawler/inject', () ->
 		body = {}
 		body.identifier = id
 		socket.on helper.nutchJobStatus, (msg) ->
-			# Since Socket IO emits message to all clients, we are only 
-			# interested in the message that corresponds to our test case,
-			# hence the test verification is done only if the message has the
-			# same id sent for the nutch process.
-			if (msg.id is id)
-				expect(msg.status).to.equal(db.jobStatus.SUCCESS)
-				nutchCommons.findLatestJobStatus id, db.jobStatus.INJECTOR, (status) ->
-					expect(status).to.equal(db.jobStatus.SUCCESS)
-					done()
+			helper.verifyJobStatus id, msg, db.jobStatus.INJECTOR, db.jobStatus.SUCCESS, () ->
+				done()
 
 		client.post '/crawler/inject', body, (err, req, res, data) ->
 			expect(res.statusCode).to.equal(202)
@@ -125,15 +117,8 @@ describe 'POST /crawler/inject', () ->
 			body = {}
 			body.identifier = id
 			socket.on helper.nutchJobStatus, (msg) ->
-				# Since Socket IO emits message to all clients, we are only 
-				# interested in the message that corresponds to our test case,
-				# hence the test verification is done only if the message has the
-				# same id sent for the nutch process.
-				if (msg.id is id)
-					expect(msg.status).to.equal(db.jobStatus.FAILURE)			
-					nutchCommons.findLatestJobStatus id, db.jobStatus.INJECTOR, (status) ->
-						expect(status).to.equal(db.jobStatus.FAILURE)
-						done()
+				helper.verifyJobStatus id, msg, db.jobStatus.INJECTOR, db.jobStatus.FAILURE, () ->
+					done()
 
 			client.post '/crawler/inject', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(202)

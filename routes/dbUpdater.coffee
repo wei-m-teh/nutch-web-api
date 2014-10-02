@@ -30,7 +30,7 @@ populateUpdateDbOptionsAndArguments = (identifier) ->
 	options.cwd = configuration.workingDir
 	processArgs = []
 	processArgs.push 'updatedb'
-	processArgs.push nutchCommons.commonOptions
+	processArgs.push nutchCommons.populateCommonOptions({})...
 	processArgs.push '-crawlId'
 	processArgs.push identifier
 	jobOptions = {}

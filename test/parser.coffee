@@ -6,7 +6,6 @@ expect = require('chai').expect
 should = require('chai').should()
 db = require '../repositories/db.coffee'
 helper = require './helper.coffee'
-nutchCommons = require '../routes/nutchCommons.coffee'
 client = helper.getClient()
 socket =
 
@@ -69,14 +68,7 @@ describe 'POST /crawler/parse', () ->
 		body = {}
 		body.identifier = id
 		socket.on helper.nutchJobStatus, (msg) ->
-			# Since Socket IO emits message to all clients, we are only 
-			# interested in the message that corresponds to our test case,
-			# hence the test verification is done only if the message has the
-			# same id sent for the nutch process.
-			if (msg.id is id)
-				expect(msg.status).to.equal(db.jobStatus.SUCCESS)
-				nutchCommons.findLatestJobStatus id, db.jobStatus.PARSER, (status) ->
-					expect(status).to.equal(db.jobStatus.SUCCESS)
+			helper.verifyJobStatus id, msg, db.jobStatus.PARSER, db.jobStatus.SUCCESS, () ->
 					done()
 
 		client.post '/crawler/parse', body, (err, req, res, data) ->
@@ -92,14 +84,7 @@ describe 'POST /crawler/parse', () ->
 		body = {}
 		body.identifier = id
 		socket.on helper.nutchJobStatus, (msg) ->
-			# Since Socket IO emits message to all clients, we are only 
-			# interested in the message that corresponds to our test case,
-			# hence the test verification is done only if the message has the
-			# same id sent for the nutch process.
-			if (msg.id is id)
-				expect(msg.status).to.equal(db.jobStatus.FAILURE)
-				nutchCommons.findLatestJobStatus id, db.jobStatus.FETCHER, (status) ->
-					expect(status).to.equal(db.jobStatus.FAILURE)
+			helper.verifyJobStatus id, msg, db.jobStatus.PARSER, db.jobStatus.FAILURE, () ->
 					done()
 
 		client.post '/crawler/parse', body, (err, req, res, data) ->
