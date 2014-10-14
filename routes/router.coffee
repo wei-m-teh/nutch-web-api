@@ -1,15 +1,22 @@
-crawler = require './crawler.coffee' 
+crawler = require './crawler.coffee'
+injector = require './injector.coffee' 
+generator = require './generator.coffee'
+fetcher = require './fetcher.coffee'
+parser = require './parser.coffee'
+dbUpdater = require './dbUpdater.coffee'
+solrIndexer = require './solrIndexer.coffee'
 seeds = require './seeds.coffee'
 nutchStatus = require './nutchStatus.coffee'
 
 route = (server) ->
-	server.post '/crawler/inject', crawler.inject
-	server.post '/crawler/generate', crawler.generate
-	server.post '/crawler/fetch', crawler.fetch
-	server.post '/crawler/parse', crawler.parse
-	server.post '/crawler/updatedb', crawler.updateDb
-	server.post '/crawler/solr-index', crawler.solrIndex
-	server.post '/crawler/solr-delete-duplicates', crawler.solrDeleteDuplicates
+	server.post '/crawler/crawl', crawler.crawl
+	server.post '/crawler/inject', injector.inject
+	server.post '/crawler/generate', generator.generate
+	server.post '/crawler/fetch', fetcher.fetch
+	server.post '/crawler/parse', parser.parse
+	server.post '/crawler/updatedb', dbUpdater.update
+	server.post '/crawler/solr-index', solrIndexer.index
+	server.post '/crawler/solr-delete-duplicates', solrIndexer.deleteDuplicates
 	server.post '/seeds', seeds.create
 	server.get '/seeds', seeds.getAll
 	server.get '/seeds/:id', seeds.get

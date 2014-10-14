@@ -2,7 +2,15 @@ async = require 'async'
 db = require '../repositories/db.coffee'
 nutchCommons = require './nutchCommons.coffee'
 
-fetch = (identifier, batchId, res, next) ->
+fetch = (req, res, next) ->
+	nutchCommons.extractIdentifier req, (identifier, err) ->
+		if err
+			next err
+		else 
+			nutchCommons.extractBatchId req, (batchId) ->
+				doFetch identifier, batchId, res, next
+
+doFetch = (identifier, batchId, res, next) ->
 	processJobStatus = (callback) ->
 		nutchCommons.populateJobStatus identifier, db.jobStatus.FETCHER, callback
 
@@ -49,3 +57,4 @@ populateFetcherOptionsAndArguments = (identifier, batchId) ->
 	return jobOptions
 
 exports.fetch = fetch
+exports.doFetch = doFetch

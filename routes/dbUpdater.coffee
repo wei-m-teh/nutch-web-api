@@ -2,7 +2,14 @@ async = require 'async'
 db = require '../repositories/db.coffee'
 nutchCommons = require './nutchCommons.coffee'
 
-update = (identifier, res, next) ->
+update = (req, res, next) ->
+	nutchCommons.extractIdentifier req, (identifier, err) ->
+		if err
+			next err
+		else
+			doUpdate identifier, res, next
+
+doUpdate = (identifier, res, next) ->
 	processJobStatus = (callback) ->
 		nutchCommons.populateJobStatus identifier, db.jobStatus.UPDATEDB, callback
 
@@ -39,3 +46,4 @@ populateUpdateDbOptionsAndArguments = (identifier) ->
 	return jobOptions
 
 exports.update = update
+exports.doUpdate = doUpdate

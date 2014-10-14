@@ -10,6 +10,21 @@ io = null
 server = null
 
 startServer = () ->
+	loggerConfig()
+	db.loadDb()
+	server = restify.createServer { name: 'nutch-web-api' }
+	io = scoketio.listen server
+
+	server.use restify.bodyParser()
+	server.use restify.queryParser()
+	router.route server
+	server.listen nconf.get('SERVER_PORT'), nconf.get('SERVER_HOST'), () ->
+  	console.log '%s listening at %s', server.name, server.url
+	
+getIo = () ->
+	io
+
+loggerConfig = () ->
 	# Create log directory if it does not already exists.
 	mkdirp process.cwd() + "/logs", (err) ->
   	if err? 
@@ -21,24 +36,6 @@ startServer = () ->
 	loggerOpt.maxsize = 100000
 	winston.add winston.transports.File, loggerOpt
 	winston.remove winston.transports.Console
-	db.loadDb()
-	server = restify.createServer { name: 'nutch-web-api' }
-	io = scoketio.listen server
-	io.sockets.on 'connection', (socket) ->
-		socket.emit 'news', { 'hello' : 'world' }
-		socket.on 'my other event', (data) ->
-			console.log data
-
-	server.use restify.bodyParser()
-	server.use restify.queryParser()
-
-	router.route server
-
-	server.listen nconf.get('SERVER_PORT'), nconf.get('SERVER_HOST'), () ->
-	  console.log '%s listening at %s', server.name, server.url
-
-getIo = () ->
-	io
 
 exports.startServer = startServer
 exports.getIo = getIo

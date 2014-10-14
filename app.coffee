@@ -1,3 +1,4 @@
+domain = require('domain').create()
 nconf = require 'nconf'
 server = require './server.coffee'
 
@@ -7,4 +8,9 @@ if !environment
 nconf.file { file : './conf/env-' + environment + '.json' }
 		.argv().env()
 nconf.load()
-server.startServer()
+
+domain.on 'error', (err) ->
+	console.log err.message
+
+domain.run () ->
+	server.startServer()

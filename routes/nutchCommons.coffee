@@ -5,12 +5,24 @@ winston = require 'winston'
 db = require '../repositories/db.coffee'
 server = require '../server.coffee'
 fs = require 'fs'
+io = require('socket.io-client')
+urlResolver = require('url')
+events = require('events')
+eventEmitter = new events.EventEmitter()
+eventEmitter.setMaxListeners 500
+hostname = nconf.get 'SERVER_HOST'
+port = nconf.get 'SERVER_PORT'
+serverUrl = {}
+serverUrl.protocol = 'http'
+serverUrl.hostname = hostname
+serverUrl.port = port
 
 # set the number of slaves nodes
 numSlaves = 1
 numTasks = numSlaves * 2
 sizeFetchlist = numSlaves * 50000
 NUTCH_APP_NAME = 'nutch'
+NUTCH_JOB_STATUS = 'nutchJobStatus'
 
 commonOptions = {}
 commonOptions['mapred.reduce.tasks'] = numTasks
@@ -18,6 +30,9 @@ commonOptions['mapred.child.java.opts'] = '-Xmx1000m'
 commonOptions['mapred.reduce.tasks.speculative.execution'] = 'false'
 commonOptions['mapred.map.tasks.speculative.execution'] = 'false'
 commonOptions['mapred.compress.map.output'] = 'true'
+
+getIo = () ->
+	socket = io.connect urlResolver.format serverUrl, {'reconnection delay' : 0, 'reopen delay' : 0, 'force new connection' : true }
 
 populateCommonOptions = (jobOptions) ->
 	args=[]
@@ -94,19 +109,19 @@ findLatestJobStatus = (identifier, jobName, next) ->
 		next latestJobStatus
 
 submitHttpResponse = (identifier, res, callback) ->
-	response = {}
-	response.message =  "injector job submitted successfully"
-	response.status  = 202
-	response.identifier = identifier
-	res.status 202
-	res.send response
-	callback null
+	if res 
+		response = {}
+		response.message =  "injector job submitted successfully"
+		response.status  = 202
+		response.identifier = identifier
+		res.status 202
+		res.send response
+		callback null 
+	else 
+		callback null
 
 executeJob = (jobParams, identifier, jobName) ->
 	jobExecutor = spawn NUTCH_APP_NAME, jobParams.arguments, jobParams.options
-	ioJobStatus = {}
-	ioJobStatus.name = jobName
-	ioJobStatus.id = identifier
 	jobExecutor.stdout.on 'data', (data) ->
 		winston.info data + '\n'
 		return
@@ -120,9 +135,17 @@ executeJob = (jobParams, identifier, jobName) ->
 		winston.info 'child process exited with code: ' + code
 		if code is 0 then jobStatus = db.jobStatus.SUCCESS else jobStatus = db.jobStatus.FAILURE
 		updateJobStatus identifier, jobStatus, jobName, (err) ->
-			ioJobStatus.status = jobStatus
-			server.getIo().sockets.emit 'nutchJobStatus', ioJobStatus
+			emitStatusEvents identifier, jobStatus, jobName
 		return
+
+emitStatusEvents = (identifier, jobStatus, jobName) ->
+	ioJobStatus = {}
+	ioJobStatus.name = jobName
+	ioJobStatus.id = identifier
+	ioJobStatus.status = jobStatus
+	server.getIo().sockets.emit NUTCH_JOB_STATUS, ioJobStatus
+	eventEmitter.emit jobName, ioJobStatus
+
 
 configureEnvironment = () ->
 	nutchHome = nconf.get 'NUTCH_HOME'
@@ -142,6 +165,31 @@ configureEnvironment = () ->
 	configuration.workingDir = workingDir
 	return configuration
 
+extractIdentifier = (req, next) ->
+	if !req.body 
+		next null, new restify.InvalidArgumentError("request body not found")
+		return	
+	
+	identifier = req.body.identifier
+	if !identifier
+		next null, new restify.InvalidArgumentError("identifier not found")
+		return
+	next identifier, null
+
+extractBatchId = (req, next) ->
+	if req.body 
+		batchId = req.body.batchId
+		if !batchId
+			batchId = generateBatchId()
+	else 
+		batchId = generateBatchId()
+	next batchId
+
+generateBatchId = () ->
+	now = new Date()
+	now.getTime()
+	
+
 exports.updateJobStatus = updateJobStatus
 exports.populateSeeds = populateSeeds
 exports.populateJobStatus = populateJobStatus
@@ -151,4 +199,10 @@ exports.configureEnvironment = configureEnvironment
 exports.commonOptions = commonOptions
 exports.findLatestJobStatus = findLatestJobStatus
 exports.populateCommonOptions = populateCommonOptions
+exports.getIo = getIo
+exports.nutchJobStatus = NUTCH_JOB_STATUS
+exports.eventEmitter = eventEmitter
+exports.extractIdentifier = extractIdentifier
+exports.extractBatchId = extractBatchId
+exports.generateBatchId = generateBatchId
 

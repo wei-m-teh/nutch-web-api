@@ -3,7 +3,14 @@ nconf = require 'nconf'
 db = require '../repositories/db.coffee'
 nutchCommons = require './nutchCommons.coffee'
 
-index = (identifier, res, next) ->
+index = (req, res, next) ->	
+	nutchCommons.extractIdentifier req, (identifier, err) ->
+		if err
+			next err	
+		else
+			doIndex identifier, res, next
+
+doIndex = (identifier, res, next) ->
 	processJobStatus = (callback) ->
 		nutchCommons.populateJobStatus identifier, db.jobStatus.SOLRINDEX, callback
 
@@ -24,7 +31,10 @@ index = (identifier, res, next) ->
 	
 	async.series [ processJobStatus ], processJob
 
-deleteDuplicates = (res, next) ->
+deleteDuplicates = (req, res, next) ->
+	doDeleteDuplicates res, next
+
+doDeleteDuplicates = (res, next) ->
 	identifier = db.jobStatus.SOLRDELETEDUPS
 	processJobStatus = (callback) ->
 		nutchCommons.populateJobStatus identifier, db.jobStatus.SOLRDELETEDUPS, callback
@@ -80,4 +90,6 @@ populateSolrDeleteDuplicatesOptionsAndArguments = () ->
 	return jobOptions
 
 exports.index = index
+exports.doIndex = doIndex
 exports.deleteDuplicates = deleteDuplicates
+exports.doDeleteDuplicates = doDeleteDuplicates

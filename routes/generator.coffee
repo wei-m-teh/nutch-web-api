@@ -2,7 +2,16 @@ async = require 'async'
 db = require '../repositories/db.coffee'
 nutchCommons = require './nutchCommons.coffee'
 
-generate = (identifier, batchId, res, next) ->
+
+generate = (req, res, next) ->
+	nutchCommons.extractIdentifier req, (identifier, err) ->
+		if err
+			next err
+		else
+			nutchCommons.extractBatchId req, (batchId) ->
+				doGenerate identifier, batchId, res, next
+
+doGenerate = (identifier, batchId, res, next) ->
 	processJobStatus = (callback) ->
 		nutchCommons.populateJobStatus identifier, db.jobStatus.GENERATOR, callback
 
@@ -50,3 +59,4 @@ populateGeneratorOptionsAndArguments = (identifier, batchId) ->
 	return jobOptions
 
 exports.generate = generate
+exports.doGenerate = doGenerate

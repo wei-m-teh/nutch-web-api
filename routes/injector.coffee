@@ -3,7 +3,14 @@ db = require '../repositories/db.coffee'
 nutchCommons = require './nutchCommons.coffee'
 server = require '../server.coffee'
 
-inject = (identifier, res, next) ->
+inject = (req, res, next) ->
+	nutchCommons.extractIdentifier req, (identifier, err) ->
+		if err
+			next err
+		else
+			doInject identifier, res, next
+
+doInject = (identifier, res, next) ->
 	processJobStatus = (callback) ->
 		nutchCommons.populateJobStatus identifier, db.jobStatus.INJECTOR, callback
 
@@ -40,3 +47,4 @@ populateInjectorOptionsAndArguments = (identifier) ->
 
 
 exports.inject = inject
+exports.doInject = doInject
