@@ -13,9 +13,11 @@ server = require '../server.coffee'
 
 crawl = (req, res, next) ->
 	extractCrawlerParameters req, (identifier, limit, err) ->
-		return next err if err
-		nutchCommons.submitHttpResponse identifier, res, next
-		doCrawl identifier, limit, next
+		if err
+			next err
+		else
+			nutchCommons.submitHttpResponse identifier, res, next
+			doCrawl identifier, limit, next
 
 doCrawl = (identifier, limit, next) ->
 	batchId = nutchCommons.generateBatchId()
@@ -85,7 +87,7 @@ doCrawl = (identifier, limit, next) ->
 
 	async.series [inject, processLoop], (err, results) ->
 		if err 
-			winston.err "crawler job failed for identifier: #{identfiier}"
+			winston.error "crawler job failed for identifier: #{identifier}"
 		else 
 			winston.info "crawler job completed successfully for identifier: #{identifier}"
 	return

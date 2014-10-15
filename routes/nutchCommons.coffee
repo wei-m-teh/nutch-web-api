@@ -123,18 +123,19 @@ submitHttpResponse = (identifier, res, callback) ->
 executeJob = (jobParams, identifier, jobName) ->
 	jobExecutor = spawn NUTCH_APP_NAME, jobParams.arguments, jobParams.options
 	jobExecutor.stdout.on 'data', (data) ->
-		winston.info data + '\n'
+		winston.info "For JobName: #{jobName}, Identifier: #{identifier}, #{data} \n"
 		return
 	
 	jobExecutor.stderr.on 'error', (data) ->
-		winston.error 'stderr: ' + data
+		winston.error "For JobName: #{jobName}, Identifier: #{identifier}, #{data} \n"
 		updateJobStatus identifier, db.jobStatus.FAILURE, jobName
 		return
 
 	jobExecutor.on 'close', (code) ->
-		winston.info 'child process exited with code: ' + code
+		winston.info "For JobName: #{jobName}, Identifier: #{identifier}, job exited with code #{code}"
 		if code is 0 then jobStatus = db.jobStatus.SUCCESS else jobStatus = db.jobStatus.FAILURE
 		updateJobStatus identifier, jobStatus, jobName, (err) ->
+			jobStatus = db.jobStatus.FAILURE if err?
 			emitStatusEvents identifier, jobStatus, jobName
 		return
 

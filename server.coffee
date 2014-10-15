@@ -1,3 +1,5 @@
+cluster = require 'cluster'
+domain = require 'domain'
 restify = require 'restify'
 http = require 'http'
 mkdirp = require 'mkdirp'
@@ -20,7 +22,7 @@ startServer = () ->
 	router.route server
 	server.listen nconf.get('SERVER_PORT'), nconf.get('SERVER_HOST'), () ->
   	console.log '%s listening at %s', server.name, server.url
-	
+		
 getIo = () ->
 	io
 

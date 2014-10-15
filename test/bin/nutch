@@ -87,7 +87,7 @@ if [ "$COMMAND" = "crawl" ] ; then
   exit 0;
 elif [ "$COMMAND" = "inject" ] ; then
     CRAWLID=$3
-    if [ "$CRAWLID" = "injector.success" -o "$CRAWLID" = "crawler.success" ] ; then
+    if [ "$CRAWLID" = "injector.success" -o "$CRAWLID" = "crawler.success" -o "$CRAWLID" = "crawler.generator.failure" -o "$CRAWLID" = "crawler.fetcher.failure" -o "$CRAWLID" = "crawler.parser.failure" -o "$CRAWLID" = "crawler.updatedb.failure" -o "$CRAWLID" = "crawler.solrindexer.failure" ] ; then
       exit 0;
     else 
       exit 1;
@@ -96,28 +96,28 @@ elif [ "$COMMAND" = "hostinject" ] ; then
 exit 0;
 elif [ "$COMMAND" = "generate" ] ; then
     CRAWLID=${18}
-    if [ "$CRAWLID" = "generator.success" -o "$CRAWLID" = "crawler.success" ] ; then
+    if [ "$CRAWLID" = "generator.success" -o "$CRAWLID" = "crawler.success" -o "$CRAWLID" = "crawler.fetcher.failure" -o "$CRAWLID" = "crawler.parser.failure" -o "$CRAWLID" = "crawler.updatedb.failure" -o "$CRAWLID" = "crawler.solrindexer.failure" ] ; then
       exit 0;
     else 
       exit 1;
     fi
 elif [ "$COMMAND" = "fetch" ] ; then
     CRAWLID=${15}
-    if [ "$CRAWLID" = "fetcher.success" -o "$CRAWLID" = "crawler.success" ] ; then
+    if [ "$CRAWLID" = "fetcher.success" -o "$CRAWLID" = "crawler.success" -o "$CRAWLID" = "crawler.parser.failure" -o "$CRAWLID" = "crawler.updatedb.failure" -o "$CRAWLID" = "crawler.solrindexer.failure" ] ; then
       exit 0;
     else 
       exit 1;
     fi
 elif [ "$COMMAND" = "parse" ] ; then
     CRAWLID=${17}
-    if [ "$CRAWLID" = "parser.success" -o "$CRAWLID" = "crawler.success" ] ; then
+    if [ "$CRAWLID" = "parser.success" -o "$CRAWLID" = "crawler.success" -o "$CRAWLID" = "crawler.updatedb.failure" -o "$CRAWLID" = "crawler.solrindexer.failure" ] ; then
       exit 0;
     else 
       exit 1;
     fi
 elif [ "$COMMAND" = "updatedb" ] ; then
     CRAWLID=${12}
-    if [ "$CRAWLID" = "updatedb.success" -o "$CRAWLID" = "crawler.success" ] ; then
+    if [ "$CRAWLID" = "updatedb.success" -o "$CRAWLID" = "crawler.success" -o "$CRAWLID" = "crawler.solrindexer.failure" -o "$CRAWLID" = "crawler.solrindexer.failure" ] ; then
       exit 0;
     else 
       exit 1;

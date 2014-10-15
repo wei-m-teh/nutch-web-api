@@ -33,7 +33,7 @@ verifyJobStatus = (id, msg, jobName, expectedStatus, next) ->
 	# interested in the message that corresponds to our test case,
 	# hence the test verification is done only if the message has the
 	# same id sent for the nutch process.
-	if (msg.id is id)
+	if (msg.id is id and msg.name is jobName)
 		expect(msg.status).to.equal(expectedStatus)			
 		nutchCommons.findLatestJobStatus id, jobName, (status) ->
 			expect(status).to.equal(expectedStatus)
