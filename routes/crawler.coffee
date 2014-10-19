@@ -12,16 +12,18 @@ db = require '../repositories/db.coffee'
 server = require '../server.coffee'
 
 crawl = (req, res, next) ->
-	extractCrawlerParameters req, (identifier, limit, err) ->
+	extractCrawlerParameters req, (identifier, limit, seeds, err) ->
 		if err
 			next err
 		else
 			nutchCommons.submitHttpResponse identifier, res, next
-			doCrawl identifier, limit, next
+			doCrawl identifier, limit, seeds, next
 
-doCrawl = (identifier, limit, next) ->
-	batchId = nutchCommons.generateBatchId()
+doCrawl = (identifier, limit, seeds, next) ->
+	batchId = 
 
+	seed = (callback) ->
+		
 	inject = (callback) ->
 		injector.doInject identifier, null, (err) ->
 				callback err if err
@@ -82,6 +84,7 @@ doCrawl = (identifier, limit, next) ->
 			callback err
 
 	processLoop = (callback) ->
+		batchId = nutchCommons.generateBatchId()
 		async.timesSeries limit, nutchJobs, (err, results) ->
 			callback err 
 
@@ -94,19 +97,24 @@ doCrawl = (identifier, limit, next) ->
 
 extractCrawlerParameters = (req, next) ->
 	if !req.body 
-		next null, null, new restify.InvalidArgumentError("request body not found")
+		next null, null, null, new restify.InvalidArgumentError("request body not found")
 		return	
 
 	identifier = req.body.identifier
 	if !identifier
-		next null, null, new restify.InvalidArgumentError("identifier not found")
+		next null, null, null, new restify.InvalidArgumentError("identifier not found")
 		return
 	
 	limit = req.body.limit
 	if !limit
-		next null, null, new restify.InvalidArgumentError("limit not found")
+		next null, null, null, new restify.InvalidArgumentError("limit not found")
 		return
 
-	next identifier, limit, null
+	seeds = req.body.seeds
+	if !seeds 
+		next null, null, null, new restify.InvalidArgumentError("seeds not found")
+		return
+
+	next identifier, limit, seeds, null
 
 exports.crawl = crawl

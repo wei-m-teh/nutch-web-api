@@ -41,23 +41,37 @@ get = (req, res, next) ->
 		res.send url
 		next()
 
-create = (req, res, next) ->
-	if !req.body?
-		next()
-	db.get('seeds').insert req.body, (err, doc) ->
-		if err
-			next new ConflictError 'Duplicate entry'
-		newUrl = {}
-		newUrl.id = doc._id
-		newUrl.url = doc.url
+
+submitHttpResponse = (req, res, newUrl, next) ->
+	createLocationHeader = (req) ->
 		locationUrl = {}
 		locationUrl.protocol = 'http:'
 		locationUrl.host = req.headers.host
 		locationUrl.pathname = req.url + '/' + newUrl.id
-		res.header "Location",  urlResolver.format locationUrl
+
+	if err
+		next new ConflictError 'Duplicate entry'
+	else
+		res.header "Location",  urlResolver.format createLocationHeader(req)
 		res.status 201
 		res.send newUrl
 		next()
+
+create = (req, res, next) ->
+	if !req.body?
+		next()
+	else
+		doCreate req.body, next
+
+doCreate = (seeds, next) ->
+	db.get('seeds').insert req.body, (err, doc) ->
+		if err
+			next new ConflictError 'Duplicate entry'
+		else	
+			newUrl = {}
+			newUrl.id = doc._id
+			newUrl.url = doc.url
+			submitHttpResponse req, res, newUrl, next	
 
 update = (req, res, next) ->
 	id = req.params.id
