@@ -21,14 +21,16 @@ afterEach () ->
 
 describe '/crawler/inject', () ->
 	describe 'POST /crawler/inject', () ->
+		id = 'testInjector'
 		before () ->
 			seed = {}
-			seed.url = 'http://test.com'
+			seed.urls = [ 'http://test.com' ]
+			seed.identifier = id
 			client.post '/seeds', seed, (err, req, res, data) ->
 
 		it 'should submit injector job successfully, resulted in 202 status code and injector status table populated', (done) ->
 			body = {}
-			body.identifier = 'testInjector'
+			body.identifier = id
 			client.post '/crawler/inject', body, (err, req, res, data) ->
 				if err
 					done(err)
@@ -43,12 +45,13 @@ describe '/crawler/inject', () ->
 		
 describe '/crawler/inject', () ->
 	describe 'POST /crawler/inject', () ->
-		before (done) ->
+		id = 'noIdTest'
+		before () ->
 			seed = {}
-			seed.url = 'http://test.com'
+			seed.identifier = id
+			seed.urls = [ 'http://test.com' ]
 			client.post '/seeds', seed, (err, req, res, data) ->
-				done()
-
+				
 		it 'should NOT submit injector job successfully, when identifier is not provided to the injector, and should result in 409 status code', (done) ->
 			body = {}
 			client.post '/crawler/inject', body, (err, req, res, data) ->
@@ -59,21 +62,18 @@ describe '/crawler/inject', () ->
 describe '/crawler/inject', () ->
 	describe 'POST /crawler/inject', () ->
 		id = 'testInjector.inprogress'
-		before (done) ->
+		before () ->
 			seed = {}
-			seed.url = 'http://test.com'
+			seed.identifier = id
+			seed.urls = [ 'http://test.com' ]
 			client.post '/seeds', seed, (err, req, res, data) ->
-				if err
-					done(err)
-					return			
+
 			injectorStatus = {}
 			injectorStatus.status = 0
 			injectorStatus.identifier = id
 			injectorStatus.jobName = db.jobStatus.INJECTOR
 			injectorStatus.date = Date.now()
 			db.get('nutchStatus').insert injectorStatus, (err, doc) ->
-				done(err)
-				return
 				
 		it 'should NOT submit injector job successfully, when another injector job is in progress', (done) ->
 			body = {}
@@ -90,7 +90,8 @@ describe 'POST /crawler/inject', () ->
 	before () ->
 		socket = helper.getIo()
 		seed = {}
-		seed.url = 'http://test.com'
+		seed.identifier = id
+		seed.urls = [ 'http://test.com' ]
 		client.post '/seeds', seed, (err, req, res, data) ->
 	
 	it 'should complete injector job successfully, and injector status updated to indicate the status to complete', (done) ->
@@ -104,21 +105,22 @@ describe 'POST /crawler/inject', () ->
 			expect(res.statusCode).to.equal(202)
 
 describe 'POST /crawler/inject', () ->
-		helper.extendDefaultTimeout this
-		id = 'injector.failure'
-		socket =
-		before () ->
-			socket = helper.getIo()
-			seed = {}
-			seed.url = 'http://test.com'
-			client.post '/seeds', seed, (err, req, res, data) ->
-		
-		it 'should fail injector job, and injector status updated to indicate the status to complete', (done) ->
-			body = {}
-			body.identifier = id
-			socket.on helper.nutchJobStatus, (msg) ->
-				helper.verifyJobStatus id, msg, db.jobStatus.INJECTOR, db.jobStatus.FAILURE, () ->
-					done()
+	helper.extendDefaultTimeout this
+	id = 'injector.failure'
+	socket =
+	before () ->
+		socket = helper.getIo()
+		seed = {}
+		seed.identifier = id
+		seed.urls = [ 'http://test.com' ]
+		client.post '/seeds', seed, (err, req, res, data) ->
+	
+	it 'should fail injector job, and injector status updated to indicate the status to complete', (done) ->
+		body = {}
+		body.identifier = id
+		socket.on helper.nutchJobStatus, (msg) ->
+			helper.verifyJobStatus id, msg, db.jobStatus.INJECTOR, db.jobStatus.FAILURE, () ->
+				done()
 
-			client.post '/crawler/inject', body, (err, req, res, data) ->
-				expect(res.statusCode).to.equal(202)
+		client.post '/crawler/inject', body, (err, req, res, data) ->
+			expect(res.statusCode).to.equal(202)

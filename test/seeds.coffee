@@ -25,51 +25,47 @@ describe '/seeds', () ->
 	describe 'POST /seeds', () ->
 		it 'should get a 201 response statusCode when new seed is created', (done) ->
 			seed = {}
-			seed.url = 'http://test.com'
+			seed.identifier = 'testSeed.success'
+			seed.urls = [ 'http://test.com' ]
 			client.post '/seeds', seed, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(201)
-				expect(data.url).to.equal(seed.url)
 				done()
 	
 	describe 'POST /seeds', () ->
 		it 'should get a 409 response statusCode when duplicate seed creation is attempted', (done) ->
 			seed = {}
-			seed.url = 'http://test.com'
+			seed.identifier = 'testSeed.duplicate'
+			seed.urls = [ 'http://test.com' ]
 			client.post '/seeds', seed, (err, req, res, data) ->
 				client.post '/seeds', seed, (err, req, res, data) ->
 					expect(res.statusCode).to.equal(409)
 					done()
 
 	describe 'PUT /seeds', () ->
+		id = 'testSeed.update.success'
 		seed = {}
-		seed.url = 'http://test.com'
-		seedId = ''
-		before (done)->
+		seed.identifier = id
+		seed.urls = [ 'http://test.com' ]
+		before ()->
 			client.post '/seeds', seed, (err, req, res, data) ->
-				if err
-					done(err)
-				seedId = data.id
-				done()
+
 		it 'should get a 204 response statusCode when the existing seed is updated', (done) ->
-			seed.url = 'http://updated.test.com'
-			client.put '/seeds/' + seedId, seed, (err, req, res, data) ->
+			seed.urls = [ 'http://updated.test.com' ]
+			client.put '/seeds/' + id, seed, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(204)
-				client.get '/seeds/' + seedId, (err, req, res, data) ->
-					expect(data.url).to.equal(seed.url)
+				client.get '/seeds/' + id, (err, req, res, data) ->
+					expect(data.urls).to.eql(seed.urls)
 					done()
 
 
 	describe 'DELETE /seeds', () ->
+		id = 'testSeed.delete.success'
 		seed = {}
-		seed.url = 'http://test.com'
-		seedId = ''
-		before (done)->
+		seed.urls = [ 'http://test.com' ]
+		before ()->
 			client.post '/seeds', seed, (err, req, res, data) ->
-				if err
-					done(err)
-				seedId = data.id
-				done()
+
 		it 'should get a 204 response statusCode when the given seed is deleted', (done) ->
-			client.del '/seeds/' + seedId, (err, req, res) ->
+			client.del '/seeds/' + id, (err, req, res) ->
 				expect(res.statusCode).to.equal(204)
 				done()
