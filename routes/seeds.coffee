@@ -2,7 +2,7 @@ restify = require 'restify'
 nconf = require 'nconf'
 urlResolver = require('url')
 db = require '../repositories/db.coffee'
-nutchCommons = './nutchCommnons.coffee'
+nutchCommons = require './nutchCommons.coffee'
 ConflictError = require '../errors/ConflictError.coffee'
 
 remove = (req, res, next) ->
@@ -42,22 +42,15 @@ get = (req, res, next) ->
 		next()
 
 
-submitHttpResponse = (req, res, id, next) ->
-	createLocationHeader = (req) ->
-		locationUrl = {}
-		locationUrl.protocol = 'http:'
-		locationUrl.host = req.headers.host
-		locationUrl.pathname = req.url + '/' + id
-		return locationUrl
-	
-	sendHttpResponse = (req, res, next) ->
-		res.header "Location",  urlResolver.format createLocationHeader(req)
+submitHttpResponse = (res, id, next) ->	
+	sendHttpResponse = () ->
+		nutchCommons.createLocationHeader res, id
 		res.status 201
 		res.send '' 
 		next()
 
 	return next new ConflictError 'Duplicate entry' if err?
-	return sendHttpResponse(req, res, next) if req?
+	return sendHttpResponse() if res?
 	next()
 
 create = (req, res, next) ->
@@ -65,14 +58,14 @@ create = (req, res, next) ->
 	seeds = {}
 	seeds.id = req.body.identifier
 	seeds.urls = req.body.urls
-	doCreate req, res, seeds, next
+	doCreate res, seeds, next
 
-doCreate = (req, res, seeds, next) ->
+doCreate = (res, seeds, next) ->
 	db.get('seeds').insert seeds, (err, doc) ->
 		if err?
 			next new ConflictError 'Duplicate entry'
 		else	
-			submitHttpResponse req, res, doc.id, (err) ->
+			submitHttpResponse res, doc.id, (err) ->
 				next err
 
 update = (req, res, next) ->
@@ -98,5 +91,6 @@ update = (req, res, next) ->
 exports.getAll = getAll
 exports.get = get
 exports.create = create
+exports.doCreate = doCreate
 exports.remove = remove
 exports.update = update

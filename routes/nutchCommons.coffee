@@ -120,6 +120,14 @@ submitHttpResponse = (identifier, res, callback) ->
 	else 
 		callback null
 
+createLocationHeader = (res, identifier) ->
+	locationUrl = {}
+	locationUrl.protocol = 'http:'
+	locationUrl.host = res.req.headers.host
+	locationUrl.pathname = "#{res.req.url}/#{identifier}"
+	res.header "Location",  urlResolver.format locationUrl
+	return
+	
 executeJob = (jobParams, identifier, jobName) ->
 	jobExecutor = spawn NUTCH_APP_NAME, jobParams.arguments, jobParams.options
 	jobExecutor.stdout.on 'data', (data) ->
@@ -195,6 +203,7 @@ exports.updateJobStatus = updateJobStatus
 exports.populateSeeds = populateSeeds
 exports.populateJobStatus = populateJobStatus
 exports.submitHttpResponse = submitHttpResponse
+exports.createLocationHeader = createLocationHeader
 exports.executeJob = executeJob
 exports.configureEnvironment = configureEnvironment
 exports.commonOptions = commonOptions
@@ -206,4 +215,3 @@ exports.eventEmitter = eventEmitter
 exports.extractIdentifier = extractIdentifier
 exports.extractBatchId = extractBatchId
 exports.generateBatchId = generateBatchId
-

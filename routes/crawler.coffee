@@ -1,6 +1,7 @@
 async = require 'async'
 restify = require 'restify'
 winston = require 'winston'
+seeder = require './seeds.coffee'
 injector = require './injector.coffee'
 generator = require './generator.coffee'
 fetcher = require './fetcher.coffee'
@@ -23,6 +24,10 @@ doCrawl = (identifier, limit, seeds, next) ->
 	batchId = 
 
 	seed = (callback) ->
+		seedData = {}
+		seedData.identifier = identifier
+		seedData.urls = seeds
+		seeder.doCreate null, seedData, callback
 		
 	inject = (callback) ->
 		injector.doInject identifier, null, (err) ->
@@ -88,7 +93,7 @@ doCrawl = (identifier, limit, seeds, next) ->
 		async.timesSeries limit, nutchJobs, (err, results) ->
 			callback err 
 
-	async.series [inject, processLoop], (err, results) ->
+	async.series [seed, inject, processLoop], (err, results) ->
 		if err 
 			winston.error "crawler job failed for identifier: #{identifier}"
 		else 
