@@ -16,29 +16,29 @@ afterEach (done) ->
 	db.get('nutchStatus').remove {}, {multi:true} 
 	done()
 
-describe '/crawler/generate', () ->
-	describe 'POST /crawler/generate successfully', () ->
+describe '/nutch/generate', () ->
+	describe 'POST /nutch/generate successfully', () ->
 		it 'should submit generator job successfully, resulted in 202 status code and generator status table populated', (done) ->
 			body = {}
 			body.identifier = 'testGenerator'
-			client.post '/crawler/generate', body, (err, req, res, data) ->
+			client.post '/nutch/generate', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(202)
-				client.get '/nutch-status' + '?identifier=' + body.identifier + '&jobName=' + db.jobStatus.GENERATOR,  (err, req, res, data) ->
+				client.get "/nutch/status?identifier=#{db.jobStatus.GENERATOR}&jobName=#{db.jobStatus.GENERATOR}",  (err, req, res, data) ->
 					expect(data).to.exist
 					done(err)
 	
-describe '/crawler/generate', () ->
-	describe 'POST /crawler/generate without an identifier', () ->
+describe '/nutch/generate', () ->
+	describe 'POST /nutch/generate without an identifier', () ->
 		it 'should NOT submit generator job successfully, when identifier is not provided, and should result in 409 status code', (done) ->
 			body = {}
-			client.post '/crawler/generate', body, (err, req, res, data) ->
+			client.post '/nutch/generate', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(409)
 				expect(err.restCode).to.equal('InvalidArgument')
 				done()
 
 
-describe '/crawler/generate', () ->
-	describe 'POST /crawler/generate while another process is in progress', () ->
+describe '/nutch/generate', () ->
+	describe 'POST /nutch/generate while another process is in progress', () ->
 		id = 'testGeneratorInProgress'
 		before (done) ->
 			generatorStatus = {}
@@ -52,12 +52,12 @@ describe '/crawler/generate', () ->
 		it 'should NOT submit generator job successfully, when another generator job is in progress', (done) ->
 			body = {}
 			body.identifier = id
-			client.post '/crawler/generate', body, (err, req, res, data) ->
+			client.post '/nutch/generate', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(409)
 				expect(err.restCode).to.equal('InvalidArgument')
 				done()
 
-describe 'POST /crawler/generate', () ->
+describe 'POST /nutch/generate', () ->
 	helper.extendDefaultTimeout this
 	id = 'generator.success'
 	before () ->
@@ -70,10 +70,10 @@ describe 'POST /crawler/generate', () ->
 			helper.verifyJobStatus id, msg, db.jobStatus.GENERATOR, db.jobStatus.SUCCESS, () ->
 				done()
 
-		client.post '/crawler/generate', body, (err, req, res, data) ->
+		client.post '/nutch/generate', body, (err, req, res, data) ->
 			expect(res.statusCode).to.equal(202)
 
-describe 'POST /crawler/generate', () ->
+describe 'POST /nutch/generate', () ->
 	helper.extendDefaultTimeout this
 	id = 'generator.failure'
 	before () ->
@@ -86,5 +86,5 @@ describe 'POST /crawler/generate', () ->
 			helper.verifyJobStatus id, msg, db.jobStatus.GENERATOR, db.jobStatus.FAILURE, () ->
 				done()
 
-		client.post '/crawler/generate', body, (err, req, res, data) ->
+		client.post '/nutch/generate', body, (err, req, res, data) ->
 			expect(res.statusCode).to.equal(202)

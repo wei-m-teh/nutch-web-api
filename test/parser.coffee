@@ -17,29 +17,29 @@ afterEach (done) ->
 	db.get('nutchStatus').remove {}, {multi:true} 
 	done()
 
-describe '/crawler/parse', () ->
-	describe 'POST /crawler/parse successfully', () ->
+describe '/nutch/parse', () ->
+	describe 'POST /nutch/parse successfully', () ->
 		it 'should submit parser job successfully, resulted in 202 status code and parser status table populated', (done) ->
 			body = {}
 			body.identifier = 'testParser'
-			client.post '/crawler/parse', body, (err, req, res, data) ->
+			client.post '/nutch/parse', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(202)
-				client.get '/nutch-status' + '?identifier=' + body.identifier + '&jobName=' + db.jobStatus.PARSER,  (err, req, res, data) ->
+				client.get "/nutch/status?identifier=#{db.jobStatus.PARSER}&jobName=#{db.jobStatus.PARSER}",  (err, req, res, data) ->
 					expect(data).to.exist
 					done(err)
 	
-describe '/crawler/parse', () ->
-	describe 'POST /crawler/parse without an identifier', () ->
+describe '/nutch/parse', () ->
+	describe 'POST /nutch/parse without an identifier', () ->
 		it 'should NOT submit parser job successfully, when identifier is not provided, and should result in 409 status code', (done) ->
 			body = {}
-			client.post '/crawler/parse', body, (err, req, res, data) ->
+			client.post '/nutch/parse', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(409)
 				expect(err.restCode).to.equal('InvalidArgument')
 				done()
 
 
-describe '/crawler/parse', () ->
-	describe 'POST /crawler/parse', () ->
+describe '/nutch/parse', () ->
+	describe 'POST /nutch/parse', () ->
 		id = 'testParser.InProgress'
 		before (done) ->
 			jobStatusToUpdate = {}
@@ -53,12 +53,12 @@ describe '/crawler/parse', () ->
 		it 'should NOT submit parser job successfully, when another parser job is in progress', (done) ->
 			body = {}
 			body.identifier = id
-			client.post '/crawler/parse', body, (err, req, res, data) ->
+			client.post '/nutch/parse', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(409)
 				expect(err.restCode).to.equal('InvalidArgument')
 				done()
 
-describe 'POST /crawler/parse', () ->
+describe 'POST /nutch/parse', () ->
 	helper.extendDefaultTimeout this
 	id = 'parser.success'
 	before () ->
@@ -71,10 +71,10 @@ describe 'POST /crawler/parse', () ->
 			helper.verifyJobStatus id, msg, db.jobStatus.PARSER, db.jobStatus.SUCCESS, () ->
 					done()
 
-		client.post '/crawler/parse', body, (err, req, res, data) ->
+		client.post '/nutch/parse', body, (err, req, res, data) ->
 			expect(res.statusCode).to.equal(202)
 
-describe 'POST /crawler/parse', () ->
+describe 'POST /nutch/parse', () ->
 	helper.extendDefaultTimeout this
 	id = 'parser.failure'
 	before () ->
@@ -87,7 +87,7 @@ describe 'POST /crawler/parse', () ->
 			helper.verifyJobStatus id, msg, db.jobStatus.PARSER, db.jobStatus.FAILURE, () ->
 					done()
 
-		client.post '/crawler/parse', body, (err, req, res, data) ->
+		client.post '/nutch/parse', body, (err, req, res, data) ->
 			expect(res.statusCode).to.equal(202)
 
 

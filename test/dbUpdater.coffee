@@ -18,29 +18,29 @@ afterEach (done) ->
 	done()
 
 
-describe '/crawler/updatedb', () ->
-	describe 'POST /crawler/updateDb successfully', () ->
+describe '/nutch/updatedb', () ->
+	describe 'POST /nutch/updatedb successfully', () ->
 		it 'should submit updateDb job successfully, resulted in 202 status code and updateDb status table populated', (done) ->
 			body = {}
 			body.identifier = 'testUpdateDb'
-			client.post '/crawler/updatedb', body, (err, req, res, data) ->
+			client.post '/nutch/updatedb', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(202)
-				client.get '/nutch-status' + '?identifier=' + body.identifier + '&jobName=' + db.jobStatus.UPDATEDB,  (err, req, res, data) ->
+				client.get "/nutch/status?identifier=#{db.jobStatus.UPDATEDB}&jobName=#{db.jobStatus.UPDATEDB}",  (err, req, res, data) ->
 					expect(data).to.exist
 					done(err)
 	
-describe '/crawler/updatedb', () ->
-	describe 'POST /crawler/updatedb without an identifier', () ->
+describe '/nutch/updatedb', () ->
+	describe 'POST /nutch/updatedb without an identifier', () ->
 		it 'should NOT submit updatedb job successfully, when identifier is not provided, and should result in 409 status code', (done) ->
 			body = {}
-			client.post '/crawler/updatedb', body, (err, req, res, data) ->
+			client.post '/nutch/updatedb', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(409)
 				expect(err.restCode).to.equal('InvalidArgument')
 				done()
 
 
-describe '/crawler/updatedb', () ->
-	describe 'POST /crawler/updatedb', () ->
+describe '/nutch/updatedb', () ->
+	describe 'POST /nutch/updatedb', () ->
 		id = 'testUpdateDb.inProgress'
 		before (done) ->
 			jobStatusToUpdate = {}
@@ -54,12 +54,12 @@ describe '/crawler/updatedb', () ->
 		it 'should NOT submit updateDb job successfully, when another updateDb job is in progress', (done) ->
 			body = {}
 			body.identifier = id
-			client.post '/crawler/updatedb', body, (err, req, res, data) ->
+			client.post '/nutch/updatedb', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(409)
 				expect(err.restCode).to.equal('InvalidArgument')
 				done()
 
-describe 'POST /crawler/updatedb', () ->
+describe 'POST /nutch/updatedb', () ->
 	helper.extendDefaultTimeout this
 	id = 'updatedb.success'
 	before () ->
@@ -72,10 +72,10 @@ describe 'POST /crawler/updatedb', () ->
 			helper.verifyJobStatus id, msg, db.jobStatus.UPDATEDB, db.jobStatus.SUCCESS, () ->
 				done()
 
-		client.post '/crawler/updatedb', body, (err, req, res, data) ->
+		client.post '/nutch/updatedb', body, (err, req, res, data) ->
 			expect(res.statusCode).to.equal(202)
 
-describe 'POST /crawler/updatedb', () ->
+describe 'POST /nutch/updatedb', () ->
 	helper.extendDefaultTimeout this
 	id = 'updatedb.failure'
 	before () ->
@@ -88,5 +88,5 @@ describe 'POST /crawler/updatedb', () ->
 			helper.verifyJobStatus id, msg, db.jobStatus.UPDATEDB, db.jobStatus.FAILURE, () ->
 				done()
 
-		client.post '/crawler/updatedb', body, (err, req, res, data) ->
+		client.post '/nutch/updatedb', body, (err, req, res, data) ->
 			expect(res.statusCode).to.equal(202)

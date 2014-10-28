@@ -17,29 +17,29 @@ afterEach (done) ->
 	db.get('nutchStatus').remove {}, {multi:true} 
 	done()
 
-describe '/crawler/solr-index', () ->
-	describe 'POST /crawler/solr-index successfully', () ->
+describe '/nutch/solr-index', () ->
+	describe 'POST /nutch/solr-index successfully', () ->
 		it 'should submit solr-index job successfully, resulted in 202 status code and solr-index status table populated', (done) ->
 			body = {}
 			body.identifier = 'testSolrIndex'
-			client.post '/crawler/solr-index', body, (err, req, res, data) ->
+			client.post '/nutch/solr-index', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(202)
-				client.get '/nutch-status' + '?identifier=' + body.identifier + '&jobName=' + db.jobStatus.SOLRINDEX,  (err, req, res, data) ->
+				client.get "/nutch/status?identifier=#{body.identifier}&jobName=#{db.jobStatus.SOLRINDEX}",  (err, req, res, data) ->
 					expect(data).to.exist
 					done(err)
 	
-describe '/crawler/solr-index', () ->
-	describe 'POST /crawler/solr-index without an identifier', () ->
+describe '/nutch/solr-index', () ->
+	describe 'POST /nutch/solr-index without an identifier', () ->
 		it 'should NOT submit solr-index job successfully, when identifier is not provided, and should result in 409 status code', (done) ->
 			body = {}
-			client.post '/crawler/solr-index', body, (err, req, res, data) ->
+			client.post '/nutch/solr-index', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(409)
 				expect(err.restCode).to.equal('InvalidArgument')
 				done()
 
 
-describe '/crawler/solr-index', () ->
-	describe 'POST /crawler/solr-index', () ->
+describe '/nutch/solr-index', () ->
+	describe 'POST /nutch/solr-index', () ->
 		id = 'solrIndex.InProgress'
 		before (done) ->
 			jobStatusToUpdate = {}
@@ -53,12 +53,12 @@ describe '/crawler/solr-index', () ->
 		it 'should NOT submit solr-index job successfully, when another solr-index job is in progress', (done) ->
 			body = {}
 			body.identifier = id
-			client.post '/crawler/solr-index', body, (err, req, res, data) ->
+			client.post '/nutch/solr-index', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(409)
 				expect(err.restCode).to.equal('InvalidArgument')
 				done()
 
-describe 'POST /crawler/solr-index', () ->
+describe 'POST /nutch/solr-index', () ->
 	helper.extendDefaultTimeout this
 	id = 'solrindex.success'
 	before () ->
@@ -71,10 +71,10 @@ describe 'POST /crawler/solr-index', () ->
 			helper.verifyJobStatus id, msg, db.jobStatus.SOLRINDEX, db.jobStatus.SUCCESS, () ->
 				done()
 
-		client.post '/crawler/solr-index', body, (err, req, res, data) ->
+		client.post '/nutch/solr-index', body, (err, req, res, data) ->
 			expect(res.statusCode).to.equal(202)
 
-describe 'POST /crawler/solr-index', () ->
+describe 'POST /nutch/solr-index', () ->
 	helper.extendDefaultTimeout this
 	id = 'solr-index.failure'
 	before () ->
@@ -87,6 +87,6 @@ describe 'POST /crawler/solr-index', () ->
 			helper.verifyJobStatus id, msg, db.jobStatus.SOLRINDEX, db.jobStatus.FAILURE, () ->
 				done()
 
-		client.post '/crawler/solr-index', body, (err, req, res, data) ->
+		client.post '/nutch/solr-index', body, (err, req, res, data) ->
 			expect(res.statusCode).to.equal(202)
 
