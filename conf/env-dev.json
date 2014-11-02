@@ -4,7 +4,7 @@
 	"NUTCH_OPTS" : "-Djdbc.username=tps_admin -Djdbc.password=tps_admin -Djdbc.url=jdbc:mysql://local.tps.standalone.com/marketplace",
 	"SEED_DIR" : "/tmp",
 	"DATA_DIR" : "/tmp/dev",
-	"SERVER_HOST" : "localhost",
+	"SERVER_HOST" : "127.0.0.1",
 	"SERVER_PORT" : "3000",
 	"SOLR_URL" : "http://localhost:11600/solr"
 }
