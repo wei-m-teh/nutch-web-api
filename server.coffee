@@ -1,11 +1,9 @@
-cluster = require 'cluster'
-domain = require 'domain'
 restify = require 'restify'
 http = require 'http'
 mkdirp = require 'mkdirp'
 nconf = require 'nconf'
 winston = require 'winston'
-scoketio = require 'socket.io'
+socketio = require 'socket.io'
 router = require './routes/router.coffee'
 db = require './repositories/db.coffee'
 io = null
@@ -15,7 +13,7 @@ startServer = () ->
 	loggerConfig()
 	db.loadDb()
 	server = restify.createServer { name: 'nutch-web-api' }
-	io = scoketio.listen server
+	io = socketio.listen server
 
 	server.use restify.bodyParser()
 	server.use restify.queryParser()

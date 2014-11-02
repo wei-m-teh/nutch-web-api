@@ -1,6 +1,5 @@
 restify = require 'restify'
 nconf = require 'nconf'
-sleep = require 'sleep'
 urlResolver = require('url')
 expect = require('chai').expect
 should = require('chai').should()

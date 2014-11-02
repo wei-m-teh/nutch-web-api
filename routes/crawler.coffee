@@ -90,7 +90,7 @@ doCrawl = (identifier, limit, seeds, next) ->
 
 	processLoop = (callback) ->
 		batchId = nutchCommons.generateBatchId()
-		async.timesSeries limit, nutchJobs, (err, results) ->
+		async.timesSeries limit, nutchJobs, (err, resuls) ->
 			callback err 
 
 	async.series [seed, inject, processLoop], (err, results) ->

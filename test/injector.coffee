@@ -1,6 +1,5 @@
 restify = require 'restify'
 nconf = require 'nconf'
-sleep = require 'sleep'
 io = require('socket.io-client')
 urlResolver = require('url')
 expect = require('chai').expect

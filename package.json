@@ -2,12 +2,17 @@
   "name": "nutch-web-api",
   "version": "1.0.0",
   "description": "Web API for Apache Nutch application",
-  "main": "server.coffee",
+  "main": "app.coffee",
   "repository": "https://github.com/wei-m-teh/nutch-web-api.git",
   "author": "Wei Teh <wei.m.teh@gmail.com>",
   "dependencies": {
-    "restify": "~2.6.1",
-    "sleep": "^1.1.8",
-    "socket.io": "^1.1.0"
+    "async": "^0.9.0",
+    "mkdirp": "^0.5.0",
+    "nconf": "^0.6.9",
+    "nedb": "^0.11.1",
+    "restify": "^2.8.3",
+    "socket.io": "^1.2.0",
+    "socket.io-client": "^1.2.0",
+    "winston": "^0.8.1"
   }
 }

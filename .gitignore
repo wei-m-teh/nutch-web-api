@@ -42,3 +42,9 @@ Thumbs.db
 #
 ######################
 *.db
+
+######################
+# Application specific folders
+#
+######################
+node_modules
