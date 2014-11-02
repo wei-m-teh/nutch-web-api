@@ -14,5 +14,14 @@
     "socket.io": "^1.2.0",
     "socket.io-client": "^1.2.0",
     "winston": "^0.8.1"
+  },
+  "scripts": {
+    "start": "coffee app.coffee test",
+    "test": "mocha --require coffee-script/register --compilers coffee:coffee-script/register"
+  },
+  "devDependencies": {
+    "chai": "^1.9.2",
+    "coffee-script": "^1.8.0",
+    "mocha": "^2.0.1"
   }
 }
