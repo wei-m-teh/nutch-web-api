@@ -20,14 +20,16 @@ doParse = (identifier, batchId, res, next) ->
 	kickoffJob = (err, result) ->
 		if err
 			next err
-		jobParams  = populateParserOptionsAndArguments identifier, batchId
-		nutchCommons.executeJob jobParams, identifier, db.jobStatus.PARSER
-		next()
+		else 
+			jobParams  = populateParserOptionsAndArguments identifier, batchId
+			nutchCommons.executeJob jobParams, identifier, db.jobStatus.PARSER
+			next()
 
 	processJob = (err) ->
 		if err
 			next err
-		async.parallel [ processHttpResponse ], kickoffJob
+		else 
+			async.parallel [ processHttpResponse ], kickoffJob
 	
 	async.series [ processJobStatus ], processJob
 	

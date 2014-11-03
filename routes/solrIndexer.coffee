@@ -20,14 +20,16 @@ doIndex = (identifier, res, next) ->
 	kickoffJob = (err, result) ->
 		if err
 			next err
-		jobParams  = populateSolrIndexOptionsAndArguments identifier
-		nutchCommons.executeJob jobParams, identifier, db.jobStatus.SOLRINDEX
-		next()
+		else
+			jobParams  = populateSolrIndexOptionsAndArguments identifier
+			nutchCommons.executeJob jobParams, identifier, db.jobStatus.SOLRINDEX
+			next()
 
 	processJob = (err) ->
 		if err
 			next err
-		async.parallel [ processHttpResponse ], kickoffJob
+		else
+			async.parallel [ processHttpResponse ], kickoffJob
 	
 	async.series [ processJobStatus ], processJob
 
@@ -45,14 +47,16 @@ doDeleteDuplicates = (res, next) ->
 	kickoffJob = (err, result) ->
 		if err
 			next err
-		jobParams  = populateSolrDeleteDuplicatesOptionsAndArguments()
-		nutchCommons.executeJob jobParams, identifier, db.jobStatus.SOLRDELETEDUPS
-		next()
+		else 
+			jobParams  = populateSolrDeleteDuplicatesOptionsAndArguments()
+			nutchCommons.executeJob jobParams, identifier, db.jobStatus.SOLRDELETEDUPS
+			next()
 
 	processJob = (err) ->
 		if err
 			next err
-		async.parallel [ processHttpResponse ], kickoffJob
+		else
+			async.parallel [ processHttpResponse ], kickoffJob
 	
 	async.series [ processJobStatus ], processJob
 

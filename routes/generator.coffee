@@ -29,7 +29,8 @@ doGenerate = (identifier, batchId, res, next) ->
 	processJob = (err) ->
 		if err
 			next err
-		async.parallel [ processHttpResponse ], kickoffJob
+		else
+			async.parallel [ processHttpResponse ], kickoffJob
 
 	async.series [ processJobStatus ], processJob
 

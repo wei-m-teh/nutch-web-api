@@ -19,14 +19,16 @@ doUpdate = (identifier, res, next) ->
 	kickoffJob = (err, result) ->
 		if err
 			next err
-		jobParams  = populateUpdateDbOptionsAndArguments identifier
-		nutchCommons.executeJob jobParams, identifier, db.jobStatus.UPDATEDB
-		next()
+		else
+			jobParams  = populateUpdateDbOptionsAndArguments identifier
+			nutchCommons.executeJob jobParams, identifier, db.jobStatus.UPDATEDB
+			next()
 
 	processJob = (err) ->
 		if err
 			next err
-		async.parallel [ processHttpResponse ], kickoffJob
+		else
+			async.parallel [ processHttpResponse ], kickoffJob
 	
 	async.series [ processJobStatus ], processJob
 

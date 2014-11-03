@@ -20,14 +20,16 @@ doInject = (identifier, res, next) ->
 	kickoffJob = (err, result) ->
 		if err
 			next err
-		jobParams  = populateInjectorOptionsAndArguments identifier
-		nutchCommons.executeJob jobParams, identifier, db.jobStatus.INJECTOR
-		next()
+		else 
+			jobParams  = populateInjectorOptionsAndArguments identifier
+			nutchCommons.executeJob jobParams, identifier, db.jobStatus.INJECTOR
+			next()
 
 	processJob = (err) ->
 		if err
 			next err
-		async.parallel [ processHttpResponse ], kickoffJob
+		else
+			async.parallel [ processHttpResponse ], kickoffJob
 
 	async.parallel [ nutchCommons.populateSeeds, processJobStatus ], processJob 
 

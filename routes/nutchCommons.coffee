@@ -116,7 +116,7 @@ submitHttpResponse = (identifier, res, callback) ->
 		response.identifier = identifier
 		res.status 202
 		res.send response
-		callback null 
+		callback null
 	else 
 		callback null
 

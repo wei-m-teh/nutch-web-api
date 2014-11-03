@@ -31,7 +31,6 @@ describe '/nutch/seeds', () ->
 				expect(res.statusCode).to.equal(201)
 				done()
 	
-	describe 'POST /nutch/seeds', () ->
 		it 'should get a 409 response statusCode when duplicate seed creation is attempted', (done) ->
 			seed = {}
 			seed.identifier = 'testSeed.duplicate'

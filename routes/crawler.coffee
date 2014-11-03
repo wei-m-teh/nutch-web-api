@@ -18,11 +18,10 @@ crawl = (req, res, next) ->
 			next err
 		else
 			nutchCommons.submitHttpResponse identifier, res, next
-			doCrawl identifier, limit, seeds, next
-
-doCrawl = (identifier, limit, seeds, next) ->
+			doCrawl identifier, limit, seeds
+		return
+doCrawl = (identifier, limit, seeds) ->
 	batchId = 
-
 	seed = (callback) ->
 		seedData = {}
 		seedData.identifier = identifier
@@ -90,7 +89,7 @@ doCrawl = (identifier, limit, seeds, next) ->
 
 	processLoop = (callback) ->
 		batchId = nutchCommons.generateBatchId()
-		async.timesSeries limit, nutchJobs, (err, resuls) ->
+		async.timesSeries limit, nutchJobs, (err, results) ->
 			callback err 
 
 	async.series [seed, inject, processLoop], (err, results) ->

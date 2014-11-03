@@ -20,14 +20,16 @@ doFetch = (identifier, batchId, res, next) ->
 	kickoffJob = (err, result) ->
 		if err
 			next err
-		jobParams  = populateFetcherOptionsAndArguments identifier, batchId
-		nutchCommons.executeJob jobParams, identifier, db.jobStatus.FETCHER
-		next()
+		else
+			jobParams  = populateFetcherOptionsAndArguments identifier, batchId
+			nutchCommons.executeJob jobParams, identifier, db.jobStatus.FETCHER
+			next()
 
 	processJob = (err) ->
 		if err
 			next err
-		async.parallel [ processHttpResponse ], kickoffJob
+		else
+			async.parallel [ processHttpResponse ], kickoffJob
 	
 	async.series [ processJobStatus ], processJob
 

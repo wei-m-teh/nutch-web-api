@@ -17,6 +17,7 @@ afterEach () ->
 
 describe '/nutch/crawl', () ->
 	describe 'POST /nutch/crawl', () ->
+		helper.extendDefaultTimeout this
 		it 'should submit crawler job successfully, resulted in 202 status code', (done) ->
 			body = {}
 			body.identifier = 'testCrawler'
@@ -29,8 +30,6 @@ describe '/nutch/crawl', () ->
 					expect(res.statusCode).to.equal(202)
 					done()
 
-describe '/nutch/crawl', () ->
-	describe 'POST /nutch/crawl', () ->
 		it 'should NOT submit the crawler job successfully, when the identifier is not provided in the request, and should resulted in 409 status code', (done) ->
 			body = {}
 			body.seeds = testSeeds
@@ -40,8 +39,6 @@ describe '/nutch/crawl', () ->
 					expect(err.restCode).to.equal('InvalidArgument')
 					done()
 
-describe '/nutch/crawl', () ->
-	describe 'POST /nutch/crawl', () ->
 		it 'should NOT submit the crawler job successfully, when limit is not provided in the request, and should resulted in 409 status code', (done) ->
 			body = {}
 			body.seeds = testSeeds
@@ -51,8 +48,6 @@ describe '/nutch/crawl', () ->
 					expect(err.restCode).to.equal('InvalidArgument')
 					done()
 
-describe '/nutch/crawl', () ->
-	describe 'POST /nutch/crawl', () ->
 		it 'should NOT submit the crawler job successfully, when seeds are not provided in the request, and should resulted in 409 status code', (done) ->
 			body = {}
 			body.identifier = 'testCrawler.nolimit'
@@ -62,8 +57,6 @@ describe '/nutch/crawl', () ->
 					expect(err.restCode).to.equal('InvalidArgument')
 					done()
 
-describe '/nutch/crawl', () ->
-	describe 'POST /nutch/crawl', () ->
 		it 'should NOT submit the crawler job successfully, when no request body is provided in the request, and should resulted in 409 status code', (done) ->
 			body = {}
 			body.identifier = 'testCrawler.nobody'
@@ -72,15 +65,9 @@ describe '/nutch/crawl', () ->
 					expect(err.restCode).to.equal('InvalidArgument')
 					done()
 
-describe '/nutch/crawl', () ->
-	helper.extendDefaultTimeout this
-	id = 'crawler.injector.failure'
-	socket = 
-	before () ->
-		socket = helper.getIo()
-		
-	describe 'POST /nutch/crawl', () ->
 		it 'should complete crawler job successfully when injector job failed, and injector job status updated to indicate failure', (done) ->
+			id = 'crawler.injector.failure'
+			socket = helper.getIo()
 			body = {}
 			body.seeds = testSeeds
 			body.identifier = id
@@ -92,15 +79,9 @@ describe '/nutch/crawl', () ->
 			client.post '/nutch/crawl', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(202)
 
-describe '/nutch/crawl', () ->
-	helper.extendDefaultTimeout this
-	id = 'crawler.generator.failure'
-	socket = 
-	before () ->
-		socket = helper.getIo()
-		
-	describe 'POST /nutch/crawl', () ->
 		it 'should complete crawler job successfully when injector job failed, and generator job status updated to indicate failure', (done) ->
+			id = 'crawler.generator.failure'
+			socket = helper.getIo()
 			body = {}
 			body.identifier = id
 			body.seeds = testSeeds
@@ -112,15 +93,9 @@ describe '/nutch/crawl', () ->
 			client.post '/nutch/crawl', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(202)
 
-describe '/nutch/crawl', () ->
-	helper.extendDefaultTimeout this
-	id = 'crawler.fetcher.failure'
-	socket = 
-	before () ->
-		socket = helper.getIo()
-		
-	describe 'POST /nutch/crawl', () ->
 		it 'should complete crawler job successfully when fetcher job failed, and generator job status updated to indicate failure', (done) ->
+			id = 'crawler.fetcher.failure'
+			socket = helper.getIo()
 			body = {}
 			body.identifier = id
 			body.seeds = testSeeds
@@ -132,16 +107,10 @@ describe '/nutch/crawl', () ->
 			client.post '/nutch/crawl', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(202)
 
-
-describe '/nutch/crawl', () ->
-	helper.extendDefaultTimeout this
-	id = 'crawler.parser.failure'
-	socket = 
-	before () ->
-		socket = helper.getIo()
-		
-	describe 'POST /nutch/crawl', () ->
 		it 'should complete crawler job successfully when fetcher job failed, and parser job status updated to indicate failure', (done) ->
+			id = 'crawler.parser.failure'
+			socket = helper.getIo()
+
 			body = {}
 			body.identifier = id
 			body.seeds = testSeeds
@@ -153,15 +122,9 @@ describe '/nutch/crawl', () ->
 			client.post '/nutch/crawl', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(202)
 
-describe '/nutch/crawl', () ->
-	helper.extendDefaultTimeout this
-	id = 'crawler.updatedb.failure'
-	socket = 
-	before () ->
-		socket = helper.getIo()
-		
-	describe 'POST /nutch/crawl', () ->
 		it 'should complete crawler job successfully when fetcher job failed, and updateDB job status updated to indicate failure', (done) ->
+			id = 'crawler.updatedb.failure'
+			socket = helper.getIo()
 			body = {}
 			body.identifier = id
 			body.seeds = testSeeds
@@ -173,15 +136,9 @@ describe '/nutch/crawl', () ->
 			client.post '/nutch/crawl', body, (err, req, res, data) ->
 				expect(res.statusCode).to.equal(202)
 
-describe '/nutch/crawl', () ->
-	helper.extendDefaultTimeout this
-	id = 'crawler.solrindexer.failure'
-	socket = 
-	before () ->
-		socket = helper.getIo()
-		
-	describe 'POST /nutch/crawl', () ->
 		it 'should complete crawler job successfully when fetcher job failed, and solrindexer job status updated to indicate failure', (done) ->
+			id = 'crawler.solrindexer.failure'
+			socket = helper.getIo()
 			body = {}
 			body.identifier = id
 			body.seeds = testSeeds
