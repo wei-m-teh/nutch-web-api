@@ -13,6 +13,7 @@
 #
 #   NUTCH_OPTS      Extra Java runtime options.
 #
+echo "TEST!"
 cygwin=false
 case "`uname`" in
 CYGWIN*) cygwin=true;;
