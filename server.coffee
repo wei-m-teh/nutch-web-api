@@ -35,7 +35,7 @@ loggerConfig = () ->
 	loggerOpt.filename = process.cwd() + '/logs/node.log'
 	loggerOpt.maxsize = 100000
 	winston.add winston.transports.File, loggerOpt
-	winston.remove winston.transports.Console
+	# winston.remove winston.transports.Console
 
 exports.startServer = startServer
 exports.getIo = getIo
