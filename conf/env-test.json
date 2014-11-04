@@ -1,5 +1,5 @@
 {
-	"NUTCH_HOME" : "./test",
+	"NUTCH_HOME" : "/home/travis/build/wei-m-teh/nutch-web-api/test",
 	"JAVA_HOME" : "/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home",
 	"NUTCH_OPTS" : "-Djdbc.username=tps_admin -Djdbc.password=tps_admin -Djdbc.url=jdbc:mysql://local.tps.standalone.com/marketplace",
 	"SEED_DIR" : "/tmp/test",
