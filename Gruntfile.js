@@ -8,7 +8,13 @@ module.exports = function(grunt) {
        // Target-specific file/dir lists and/or options go here.
         src: ['**/nutch']
       }
+    },
+    shell: {
+        dirListing: {
+            command: 'ls -lrt test/bin'
+        }
     }
   });
   grunt.loadNpmTasks('grunt-chmod');
+  grunt.loadNpmTasks('grunt-shell');
 };
