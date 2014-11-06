@@ -11,7 +11,7 @@ module.exports = function(grunt) {
     },
     shell: {
         dirListing: {
-            command: 'pwd;ls -lrt test/bin'
+            command: 'pwd;which sh;uname -a'
         }
     }
   });
