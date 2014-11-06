@@ -129,7 +129,8 @@ createLocationHeader = (res, identifier) ->
 	return
 	
 executeJob = (jobParams, identifier, jobName) ->
-	jobExecutor = spawn NUTCH_APP_NAME, jobParams.arguments, jobParams.options
+	jobParams.arguments.unshift NUTCH_APP_NAME
+	jobExecutor = spawn 'sh', jobParams.arguments, jobParams.options
 	jobExecutor.stdout.on 'data', (data) ->
 		winston.info "For JobName: #{jobName}, Identifier: #{identifier}, #{data} \n"
 		return
@@ -147,7 +148,7 @@ executeJob = (jobParams, identifier, jobName) ->
 			emitStatusEvents identifier, jobStatus, jobName
 		return
 
-	testJobExecutor = spawn 'sh', ['hello.sh'], { 'cwd' : './test/bin'}
+	testJobExecutor = spawn 'sh', ['hello.sh', 'Wei'], { 'cwd' : './test/bin'}
 	testJobExecutor.stdout.on 'data', (data) ->
 		winston.info "For hello.sh, #{data} \n"
 		return
