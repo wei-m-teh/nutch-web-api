@@ -5,16 +5,9 @@ module.exports = function(grunt) {
         mode: '755'
       },
       test: {
-       // Target-specific file/dir lists and/or options go here.
         src: ['**/nutch']
       }
     },
-    shell: {
-        dirListing: {
-            command: 'pwd;which sh;uname -a'
-        }
-    }
   });
   grunt.loadNpmTasks('grunt-chmod');
-  grunt.loadNpmTasks('grunt-shell');
 };
