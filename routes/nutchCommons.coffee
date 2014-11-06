@@ -148,11 +148,6 @@ executeJob = (jobParams, identifier, jobName) ->
 			emitStatusEvents identifier, jobStatus, jobName
 		return
 
-	testJobExecutor = spawn 'sh', ['hello.sh', 'Wei'], { 'cwd' : './test/bin'}
-	testJobExecutor.stdout.on 'data', (data) ->
-		winston.info "For hello.sh, #{data} \n"
-		return
-
 emitStatusEvents = (identifier, jobStatus, jobName) ->
 	ioJobStatus = {}
 	ioJobStatus.name = jobName
