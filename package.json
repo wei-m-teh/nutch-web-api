@@ -18,8 +18,7 @@
   "scripts": {
     "start": "coffee app.coffee test",
     "test": "mocha --require coffee-script/register --compilers coffee:coffee-script/register",
-    "grunt": "grunt chmod",
-    "grunt-shell": "grunt shell"
+    "grunt-chmod": "grunt chmod"
   },
   "devDependencies": {
     "chai": "^1.9.2",
