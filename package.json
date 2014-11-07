@@ -15,17 +15,29 @@
     "socket.io-client": "^1.2.0",
     "winston": "^0.8.1"
   },
+  "config": {
+    "blanket": {
+      "pattern": ".",
+      "loader": "./node-loaders/coffee-script",
+      "data-cover-never": "node_modules"
+    }
+  },
   "scripts": {
     "start": "coffee app.coffee test",
-    "test": "mocha --require coffee-script/register --compilers coffee:coffee-script/register",
-    "grunt-chmod": "grunt chmod"
+    "test": "mocha",
+    "grunt-chmod": "grunt chmod",
+    "grunt-test": "grunt test"
   },
+
   "devDependencies": {
+    "blanket": "^1.1.6",
     "chai": "^1.9.2",
+    "chai-as-promised": "^4.1.1",
     "coffee-script": "^1.8.0",
     "grunt": "^0.4.5",
     "grunt-chmod": "^1.0.3",
     "grunt-cli": "^0.1.13",
+    "grunt-mocha-test": "^0.12.2",
     "mocha": "^2.0.1"
   }
 }

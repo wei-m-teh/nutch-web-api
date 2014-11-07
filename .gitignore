@@ -42,6 +42,8 @@ Thumbs.db
 #
 ######################
 *.db
+*.html
+*.txt
 
 ######################
 # Application specific folders
