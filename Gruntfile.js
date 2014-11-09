@@ -11,7 +11,7 @@ module.exports = function(grunt) {
     },
     clean: {
         coverage: {
-          src: ['reports/']
+          src: ['npm-debug.log', 'reports/']
         }
       },
     mochaTest: {
