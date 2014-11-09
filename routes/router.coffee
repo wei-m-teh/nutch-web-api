@@ -23,6 +23,5 @@ route = (server) ->
 	server.put '/nutch/seeds/:id', seeds.update
 	server.del '/nutch/seeds/:id', seeds.remove
 	server.get '/nutch/status', nutchStatus.find
-	server.get '/nutch/status/:id', nutchStatus.getOne
 
 exports.route = route

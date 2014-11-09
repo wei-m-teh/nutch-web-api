@@ -9,6 +9,11 @@ module.exports = function(grunt) {
         src: ['**/nutch']
       }
     },
+    clean: {
+        coverage: {
+          src: ['reports/']
+        }
+      },
     mochaTest: {
       test: {
         options: {
@@ -22,12 +27,19 @@ module.exports = function(grunt) {
       coverage: {
         options: {
           reporter: 'html-cov',
-          require: ['blanket'],
           quiet: true,
           // specify a destination file to capture the mocha
           // output (the quiet option does not suppress this)
           reporter: 'html-cov',
-          captureFile: 'coverage.html'
+          captureFile: 'reports/coverage.html'
+        },
+        src: ['test/*.coffee']
+      },
+      // The travis-cov reporter will fail the tests if the
+      // coverage falls below the threshold configured in package.json
+      'travis-cov': {
+        options: {
+          reporter: 'travis-cov'
         },
         src: ['test/*.coffee']
       }
@@ -36,7 +48,7 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-chmod');
   grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('blanket');
-  grunt.registerTask('test', 'mochaTest');
-
+  grunt.registerTask('test', ['clean', 'mochaTest']);
 };

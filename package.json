@@ -20,6 +20,9 @@
       "pattern": ".",
       "loader": "./node-loaders/coffee-script",
       "data-cover-never": "node_modules"
+    },
+    "travis-cov": {
+      "threshold": 90
     }
   },
   "scripts": {
@@ -28,16 +31,19 @@
     "grunt-chmod": "grunt chmod",
     "grunt-test": "grunt test"
   },
-
   "devDependencies": {
     "blanket": "^1.1.6",
     "chai": "^1.9.2",
     "chai-as-promised": "^4.1.1",
     "coffee-script": "^1.8.0",
     "grunt": "^0.4.5",
+    "grunt-blanket": "0.0.8",
     "grunt-chmod": "^1.0.3",
     "grunt-cli": "^0.1.13",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-copy": "^0.7.0",
     "grunt-mocha-test": "^0.12.2",
-    "mocha": "^2.0.1"
+    "mocha": "^2.0.1",
+    "travis-cov": "^0.2.5"
   }
 }
