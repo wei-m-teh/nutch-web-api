@@ -18,7 +18,7 @@ startServer = () ->
 	server.use restify.bodyParser()
 	server.use restify.queryParser()
 	router.route server
-	server.listen nconf.get('SERVER_PORT'), nconf.get('SERVER_HOST'), () ->
+	server.listen nconf.get('NUTCH_WEB_API_SERVER_PORT'), nconf.get('NUTCH_WEB_API_SERVER_HOST'), () ->
   	console.log '%s listening at %s', server.name, server.url
 		
 getIo = () ->

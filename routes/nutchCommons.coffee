@@ -10,8 +10,8 @@ urlResolver = require('url')
 events = require('events')
 eventEmitter = new events.EventEmitter()
 eventEmitter.setMaxListeners 500
-hostname = nconf.get 'SERVER_HOST'
-port = nconf.get 'SERVER_PORT'
+hostname = nconf.get 'NUTCH_WEB_API_SERVER_HOST'
+port = nconf.get 'NUTCH_WEB_API_SERVER_PORT'
 serverUrl = {}
 serverUrl.protocol = 'http'
 serverUrl.hostname = hostname

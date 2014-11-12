@@ -62,7 +62,7 @@ doDeleteDuplicates = (res, next) ->
 
 #  $bin/nutch solrindex $commonOptions $SOLRURL -all -crawlId $CRAWL_ID
 populateSolrIndexOptionsAndArguments = (identifier) ->
-	solrUrl = nconf.get 'SOLR_URL'
+	solrUrl = nconf.get 'NUTCH_WEB_API_SOLR_URL'
 	configuration = nutchCommons.configureEnvironment()
 	options = {}
 	options.cwd = configuration.workingDir
