@@ -1,5 +1,11 @@
 db = require '../repositories/db.coffee'
 
+jobStatusMapping = {}
+jobStatusMapping[0] =  "IN_PROGRESS"
+jobStatusMapping[1] = "SUCCESS"
+jobStatusMapping[-1] = "FAILURE"
+
+
 find = (req, res, next) ->
 	identifier = req.query.identifier
 	jobName = req.query.jobName
@@ -15,7 +21,7 @@ find = (req, res, next) ->
 				jobStatus = {}
 				jobStatus.identifier = doc.identifier
 				jobStatus.jobName = doc.jobName
-				jobStatus.status  = doc.status
+				jobStatus.status  = jobStatusMapping[doc.status]
 				jobStatus.date = doc.date
 				jobStatuses.push jobStatus
 			res.status 200
