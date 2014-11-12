@@ -17,7 +17,7 @@ jobStatus.SOLRINDEX = 'SOLRINDEX'
 jobStatus.SOLRDELETEDUPS = 'SOLRDELETEDUPS'
 
 loadDb = () ->
-	dirName = nconf.get 'DATA_DIR'
+	dirName = nconf.get 'NUTCH_WEB_API_DATA_DIR'
 	db.seeds = new ds dirName  + '/seeds.db'
 	db.seeds.ensureIndex { fieldName: 'id', unique: true}
 	db.seeds.ensureIndex { fieldName: 'urls' }

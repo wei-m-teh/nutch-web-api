@@ -24,12 +24,15 @@ By default, the project expects the following environment variables available in
 - **NUTCH_HOME**
 - **JAVA_HOME** 
 
-These environment variables can be overwritten in conf/env-<environment>.json file. (An example is provided for the test, dev environments). 
-Additionally, **NUTCH_OPT** environment variable will be picked up as additional options required to run nutch application. This variable can also be overwritten by specifying it in conf/env.json. Other variables used by nutch-web-application is as followed:
+These environment variables can be overwritten in conf/env-<environment>.json file. For example, please refer to the configuration for test and dev environments respectively. 
+Additionally, the standard **NUTCH_OPT** environment variable will be picked up as additional options required to run nutch application. This variable can also be overwritten by specifying it in conf/env-<environment>.json. 
+Other variables used by nutch-web-api are as followed:
 
 - **NUTCH_WEB_API_SERVER_HOST**
 - **NUTCH_WEB_API_SERVER_PORT**
 - **NUTCH_WEB_API_SOLR_URL**
+- **NUTCH_WEB_API_SEED_DIR** (Directory where seed file is persisted in.)
+- **NUTCH_WEB_API_DATA_DIR** (Directory where the embedded database Nedb used for data  storage) 
 
 ## Starting And Stopping The Server
 ### Start nutch-web-api

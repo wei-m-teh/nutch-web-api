@@ -160,7 +160,7 @@ emitStatusEvents = (identifier, jobStatus, jobName) ->
 configureEnvironment = () ->
 	nutchHome = nconf.get 'NUTCH_HOME'
 	javaHome = nconf.get 'JAVA_HOME'
-	seedDir = nconf.get 'SEED_DIR'
+	seedDir = nconf.get 'NUTCH_WEB_API_SEED_DIR'
 	nutchOpts = nconf.get 'NUTCH_OPTS'
 	workingDir = nutchHome + '/bin'	
 

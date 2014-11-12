@@ -1,8 +1,8 @@
 {
 	"NUTCH_HOME" : "/home/nutch/dev/projects/java/nutch/nutch-2.2.1/runtime/local",
 	"JAVA_HOME" : "/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home",
-	"SEED_DIR" : "/tmp",
-	"DATA_DIR" : "/tmp/prod",
+	"NUTCH_WEB_API_SEED_DIR" : "/tmp",
+	"NUTCH_WEB_API_DATA_DIR" : "/tmp/prod",
 	"NUTCH_WEB_API_SERVER_HOST" : "127.0.0.1",
 	"NUTCH_WEB_API_SERVER_PORT" : "5000",
 	"NUTCH_WEB_API_SOLR_URL" : "http://localhost:11600/solr"
