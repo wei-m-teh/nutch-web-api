@@ -27,9 +27,9 @@ By default, the project expects the following environment variables available in
 These environment variables can be overwritten in conf/env-<environment>.json file. (An example is provided for the test, dev environments). 
 Additionally, **NUTCH_OPT** environment variable will be picked up as additional options required to run nutch application. This variable can also be overwritten by specifying it in conf/env.json. Other variables used by nutch-web-application is as followed:
 
-- **NUTCH-REST-API-SERVER_HOST**
-- **NUTCH-REST-API-SERVER_PORT**
-- **NUTCH-REST-API-SOLR_URL **
+- **NUTCH-REST-API-SERVER-HOST**
+- **NUTCH-REST-API-SERVER-PORT**
+- **NUTCH-REST-API-SOLR-URL**
 
 ## Starting And Stopping The Server
 ### Start nutch-web-api
