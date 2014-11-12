@@ -51,7 +51,8 @@ Any failure encountered during the processing of these jobs will result in the j
 - HTTP Method: **POST** 
 - Rest Endpoint: http://localhost:4000/nutch/crawl
 - Sample Request Payload:
-```
+
+```json
 {
   "identifier" : "sampleCrawl", 
   "limit" : 5,
@@ -63,7 +64,8 @@ Any failure encountered during the processing of these jobs will result in the j
 - HTTP Method: **POST** 
 - Rest Endpoint: http://localhost:4000/nutch/inject
 - Sample Request Payload:
-```
+
+```json
 {
   "identifier" : "sampleCrawl"
 }
@@ -73,7 +75,8 @@ Any failure encountered during the processing of these jobs will result in the j
 - HTTP Method: **POST** 
 - Rest Endpoint: http://localhost:4000/nutch/generate
 - Sample Request Payload:
-```
+
+```json
 {
   "identifier" : "sampleCrawl",
   "batchId: "12134343"
@@ -84,7 +87,8 @@ Any failure encountered during the processing of these jobs will result in the j
 - HTTP Method: **POST** 
 - Rest Endpoint: http://localhost:4000/nutch/fetch
 - Sample Request Payload:
-```
+
+```json
 {
   "identifier" : "sampleCrawl",
   "batchId: "12134343"
@@ -95,7 +99,8 @@ Any failure encountered during the processing of these jobs will result in the j
 - HTTP Method: **POST** 
 - Rest Endpoint: http://localhost:4000/nutch/parse
 - Sample Request Payload:
-```
+
+```json
 {
   "identifier" : "sampleCrawl",
   "batchId: "12134343"
@@ -106,7 +111,8 @@ Any failure encountered during the processing of these jobs will result in the j
 - HTTP Method: **POST** 
 - Rest Endpoint: http://localhost:4000/nutch/updatedb
 - Sample Request Payload:
-```
+
+```json
 {
   "identifier" : "sampleCrawl"
 }
@@ -116,7 +122,8 @@ Any failure encountered during the processing of these jobs will result in the j
 - HTTP Method: **POST** 
 - Rest Endpoint: http://localhost:4000/nutch/solrIndex
 - Sample Request Payload:
-```
+
+```json
 {
   "identifier" : "sampleCrawl"
 }
@@ -129,7 +136,7 @@ Any failure encountered during the processing of these jobs will result in the j
 ### Checking Nutch Job Status
 By default, upon summiting a nutch job request, a HTTP status code of **202** is returned  indicating the server has received the particular request. A typical response from the request would look like the following:
 
-```
+```json
 {
     "message": "injector job submitted successfully",
     "status": 202,
@@ -143,7 +150,7 @@ The nutch job is executed asynchronously while the server continues to serve oth
 **http://localhost:4000/nutch/status?identifier=<the identifier for the job>&jobName=<the job name>**
 A sample response from the request would look like the following:
 
-```
+```json
 {
         "identifier": "testInjector",
         "jobName": "INJECTOR",
