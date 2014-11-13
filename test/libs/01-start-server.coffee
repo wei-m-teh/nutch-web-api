@@ -1,6 +1,6 @@
 restify = require 'restify'
 nconf = require 'nconf'
-server = require '../server.coffee'
+server = require '../../server.coffee'
 
 
 nconf.file { file : './conf/env-test.json' }

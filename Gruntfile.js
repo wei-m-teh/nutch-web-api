@@ -22,7 +22,7 @@ module.exports = function(grunt) {
           clearRequireCache: false, // Optionally clear the require cache before running tests (defaults to false)
           require: ['coffee-script/register', 'coverage/blanket.coffee']
         },
-        src: ['test/*.coffee']
+        src: ['test/**/*.coffee']
       },
       coverage: {
         options: {
@@ -33,7 +33,7 @@ module.exports = function(grunt) {
           reporter: 'html-cov',
           captureFile: 'reports/coverage.html'
         },
-        src: ['test/*.coffee']
+        src: ['test/**/*.coffee']
       },
       // The travis-cov reporter will fail the tests if the
       // coverage falls below the threshold configured in package.json
@@ -41,7 +41,7 @@ module.exports = function(grunt) {
         options: {
           reporter: 'travis-cov'
         },
-        src: ['test/*.coffee']
+        src: ['test/**/*.coffee']
       }
     }
   });

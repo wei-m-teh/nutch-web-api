@@ -1,9 +1,9 @@
 async = require 'async'
 db = require '../repositories/db.coffee'
-nutchCommons = require './nutchCommons.coffee'
+nutchUtils = require './nutchUtils.coffee'
 
 update = (req, res, next) ->
-	nutchCommons.extractIdentifier req, (identifier, err) ->
+	nutchUtils.extractIdentifier req, (identifier, err) ->
 		if err
 			next err
 		else
@@ -11,17 +11,17 @@ update = (req, res, next) ->
 
 doUpdate = (identifier, res, next) ->
 	processJobStatus = (callback) ->
-		nutchCommons.populateJobStatus identifier, db.jobStatus.UPDATEDB, callback
+		nutchUtils.populateJobStatus identifier, db.jobStatus.UPDATEDB, callback
 
 	processHttpResponse = (callback) ->
-		nutchCommons.submitHttpResponse identifier, res, callback
+		nutchUtils.submitHttpResponse identifier, res, callback
 
 	kickoffJob = (err, result) ->
 		if err
 			next err
 		else
 			jobParams  = populateUpdateDbOptionsAndArguments identifier
-			nutchCommons.executeJob jobParams, identifier, db.jobStatus.UPDATEDB
+			nutchUtils.executeJob jobParams, identifier, db.jobStatus.UPDATEDB
 			next()
 
 	processJob = (err) ->
@@ -34,12 +34,12 @@ doUpdate = (identifier, res, next) ->
 
 #  $bin/nutch updatedb $commonOptions -crawlId $CRAWL_ID
 populateUpdateDbOptionsAndArguments = (identifier) ->
-	configuration = nutchCommons.configureEnvironment()
+	configuration = nutchUtils.configureEnvironment()
 	options = {}
 	options.cwd = configuration.workingDir
 	processArgs = []
 	processArgs.push 'updatedb'
-	processArgs.push nutchCommons.populateCommonOptions({})...
+	processArgs.push nutchUtils.populateCommonOptions({})...
 	processArgs.push '-crawlId'
 	processArgs.push identifier
 	jobOptions = {}

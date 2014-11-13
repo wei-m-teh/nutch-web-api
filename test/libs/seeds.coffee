@@ -4,7 +4,7 @@ urlResolver = require('url')
 expect = require('chai').expect
 should = require('chai').should()
 assert = require('chai').assert
-db = require '../repositories/db.coffee'
+db = require '../../repositories/db.coffee'
 helper = require './helper.coffee'
 client = helper.getClient()
 

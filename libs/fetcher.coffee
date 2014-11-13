@@ -1,28 +1,28 @@
 async = require 'async'
 db = require '../repositories/db.coffee'
-nutchCommons = require './nutchCommons.coffee'
+nutchUtils = require './nutchUtils.coffee'
 
 fetch = (req, res, next) ->
-	nutchCommons.extractIdentifier req, (identifier, err) ->
+	nutchUtils.extractIdentifier req, (identifier, err) ->
 		if err
 			next err
 		else 
-			nutchCommons.extractBatchId req, (batchId) ->
+			nutchUtils.extractBatchId req, (batchId) ->
 				doFetch identifier, batchId, res, next
 
 doFetch = (identifier, batchId, res, next) ->
 	processJobStatus = (callback) ->
-		nutchCommons.populateJobStatus identifier, db.jobStatus.FETCHER, callback
+		nutchUtils.populateJobStatus identifier, db.jobStatus.FETCHER, callback
 
 	processHttpResponse = (callback) ->
-		nutchCommons.submitHttpResponse identifier, res, callback
+		nutchUtils.submitHttpResponse identifier, res, callback
 
 	kickoffJob = (err, result) ->
 		if err
 			next err
 		else
 			jobParams  = populateFetcherOptionsAndArguments identifier, batchId
-			nutchCommons.executeJob jobParams, identifier, db.jobStatus.FETCHER
+			nutchUtils.executeJob jobParams, identifier, db.jobStatus.FETCHER
 			next()
 
 	processJob = (err) ->
@@ -37,7 +37,7 @@ doFetch = (identifier, batchId, res, next) ->
 populateFetcherOptionsAndArguments = (identifier, batchId) ->
 	# time limit for feching
 	timeLimitFetch = 180
-	configuration = nutchCommons.configureEnvironment()
+	configuration = nutchUtils.configureEnvironment()
 	options = {}
 	options.cwd = configuration.workingDir
 
@@ -47,7 +47,7 @@ populateFetcherOptionsAndArguments = (identifier, batchId) ->
 
 	processArgs = []
 	processArgs.push 'fetch'
-	processArgs.push nutchCommons.populateCommonOptions(fetcherOptions)...
+	processArgs.push nutchUtils.populateCommonOptions(fetcherOptions)...
 	processArgs.push batchId
 	processArgs.push '-crawlId'
 	processArgs.push identifier

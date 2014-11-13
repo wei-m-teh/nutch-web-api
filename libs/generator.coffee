@@ -1,29 +1,29 @@
 async = require 'async'
 db = require '../repositories/db.coffee'
-nutchCommons = require './nutchCommons.coffee'
+nutchUtils = require './nutchUtils.coffee'
 
 
 generate = (req, res, next) ->
-	nutchCommons.extractIdentifier req, (identifier, err) ->
+	nutchUtils.extractIdentifier req, (identifier, err) ->
 		if err
 			next err
 		else
-			nutchCommons.extractBatchId req, (batchId) ->
+			nutchUtils.extractBatchId req, (batchId) ->
 				doGenerate identifier, batchId, res, next
 
 doGenerate = (identifier, batchId, res, next) ->
 	processJobStatus = (callback) ->
-		nutchCommons.populateJobStatus identifier, db.jobStatus.GENERATOR, callback
+		nutchUtils.populateJobStatus identifier, db.jobStatus.GENERATOR, callback
 
 	processHttpResponse = (callback) ->
-		nutchCommons.submitHttpResponse identifier, res, callback
+		nutchUtils.submitHttpResponse identifier, res, callback
 
 	kickoffJob = (err, result) ->
 		if err
 			next err
 		else 
 			jobParams  = populateGeneratorOptionsAndArguments identifier, batchId
-			nutchCommons.executeJob jobParams, identifier, db.jobStatus.GENERATOR
+			nutchUtils.executeJob jobParams, identifier, db.jobStatus.GENERATOR
 			next()
 
 	processJob = (err) ->
@@ -38,12 +38,12 @@ populateGeneratorOptionsAndArguments = (identifier, batchId) ->
 	numSlaves = 1
 	sizeFetchList = numSlaves * 50000
 	addDays = 0
-	configuration = nutchCommons.configureEnvironment()
+	configuration = nutchUtils.configureEnvironment()
 	options = {}
 	options.cwd = configuration.workingDir
 	processArgs = []
 	processArgs.push 'generate'
-	processArgs.push nutchCommons.populateCommonOptions({})...
+	processArgs.push nutchUtils.populateCommonOptions({})...
 	processArgs.push '-topN' 
 	processArgs.push sizeFetchList
 	processArgs.push '-noNorm'

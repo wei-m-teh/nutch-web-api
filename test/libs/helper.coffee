@@ -3,7 +3,7 @@ nconf = require 'nconf'
 urlResolver = require('url')
 io = require('socket.io-client')
 expect = require('chai').expect
-nutchCommons = require '../routes/nutchCommons.coffee'
+nutchUtils = require '../../libs/nutchUtils.coffee'
 
 
 hostname = nconf.get 'NUTCH_WEB_API_SERVER_HOST'
@@ -35,7 +35,7 @@ verifyJobStatus = (id, msg, jobName, expectedStatus, next) ->
 	# same id sent for the nutch process.
 	if (msg.id is id and msg.name is jobName)
 		expect(msg.status).to.equal(expectedStatus)			
-		nutchCommons.findLatestJobStatus id, jobName, (status) ->
+		nutchUtils.findLatestJobStatus id, jobName, (status) ->
 			expect(status).to.equal(expectedStatus)
 			next()
 

@@ -1,12 +1,12 @@
-crawler = require './crawler.coffee'
-injector = require './injector.coffee' 
-generator = require './generator.coffee'
-fetcher = require './fetcher.coffee'
-parser = require './parser.coffee'
-dbUpdater = require './dbUpdater.coffee'
-solrIndexer = require './solrIndexer.coffee'
-seeds = require './seeds.coffee'
-nutchStatus = require './nutchStatus.coffee'
+crawler = require './libs/crawler.coffee'
+injector = require './libs/injector.coffee' 
+generator = require './libs/generator.coffee'
+fetcher = require './libs/fetcher.coffee'
+parser = require './libs/parser.coffee'
+dbUpdater = require './libs/dbUpdater.coffee'
+solrIndexer = require './libs/solrIndexer.coffee'
+seeds = require './libs/seeds.coffee'
+nutchStatus = require './libs/nutchStatus.coffee'
 
 route = (server) ->
 	server.post '/nutch/crawl', crawler.crawl

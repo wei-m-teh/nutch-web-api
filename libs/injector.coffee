@@ -1,10 +1,9 @@
 async = require 'async'
 db = require '../repositories/db.coffee'
-nutchCommons = require './nutchCommons.coffee'
-server = require '../server.coffee'
+nutchUtils = require './nutchUtils.coffee'
 
 inject = (req, res, next) ->
-	nutchCommons.extractIdentifier req, (identifier, err) ->
+	nutchUtils.extractIdentifier req, (identifier, err) ->
 		if err
 			next err
 		else
@@ -12,17 +11,17 @@ inject = (req, res, next) ->
 
 doInject = (identifier, res, next) ->
 	processJobStatus = (callback) ->
-		nutchCommons.populateJobStatus identifier, db.jobStatus.INJECTOR, callback
+		nutchUtils.populateJobStatus identifier, db.jobStatus.INJECTOR, callback
 
 	processHttpResponse = (callback) ->
-		nutchCommons.submitHttpResponse identifier, res, callback
+		nutchUtils.submitHttpResponse identifier, res, callback
 
 	kickoffJob = (err, result) ->
 		if err
 			next err
 		else 
 			jobParams  = populateInjectorOptionsAndArguments identifier
-			nutchCommons.executeJob jobParams, identifier, db.jobStatus.INJECTOR
+			nutchUtils.executeJob jobParams, identifier, db.jobStatus.INJECTOR
 			next()
 
 	processJob = (err) ->
@@ -31,10 +30,10 @@ doInject = (identifier, res, next) ->
 		else
 			async.parallel [ processHttpResponse ], kickoffJob
 
-	async.parallel [ nutchCommons.populateSeeds, processJobStatus ], processJob 
+	async.parallel [ nutchUtils.populateSeeds, processJobStatus ], processJob 
 
 populateInjectorOptionsAndArguments = (identifier) ->
-	configuration = nutchCommons.configureEnvironment()
+	configuration = nutchUtils.configureEnvironment()
 	options = {}
 	options.cwd = configuration.workingDir
 	processArgs = []

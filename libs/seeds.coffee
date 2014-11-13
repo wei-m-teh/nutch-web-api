@@ -2,7 +2,7 @@ restify = require 'restify'
 nconf = require 'nconf'
 urlResolver = require('url')
 db = require '../repositories/db.coffee'
-nutchCommons = require './nutchCommons.coffee'
+nutchUtils = require './nutchUtils.coffee'
 ConflictError = require '../errors/conflictError.coffee'
 
 remove = (req, res, next) ->
@@ -44,7 +44,7 @@ get = (req, res, next) ->
 
 submitHttpResponse = (res, id, next) ->	
 	sendHttpResponse = () ->
-		nutchCommons.createLocationHeader res, id
+		nutchUtils.createLocationHeader res, id
 		res.status 201
 		res.send '' 
 		next()
