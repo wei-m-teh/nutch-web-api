@@ -3,7 +3,7 @@ nconf = require 'nconf'
 urlResolver = require('url')
 db = require '../repositories/db.coffee'
 nutchUtils = require './nutchUtils.coffee'
-ConflictError = require '../errors/conflictError.coffee'
+ConflictError = require './errors/conflictError.coffee'
 
 remove = (req, res, next) ->
 	id = req.params.id
