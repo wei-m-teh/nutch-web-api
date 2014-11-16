@@ -37,7 +37,7 @@ get = (req, res, next) ->
 		if err
 			next new restify.ResourceNotFoundError 'resource with id: ' + id + 'cannot be found'
 		response = {}
-		response.id = docs[0]._id
+		response.id = docs[0].id
 		response.urls = docs[0].urls
 		res.status 200
 		res.send response
