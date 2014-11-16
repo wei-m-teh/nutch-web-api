@@ -14,17 +14,18 @@ server = require '../server.coffee'
 
 crawl = (req, res, next) ->
 	extractCrawlerParameters req, (identifier, limit, seeds, err) ->
-		if err
+		if err?
 			next err
 		else
 			nutchUtils.submitHttpResponse identifier, res, next
 			doCrawl identifier, limit, seeds
 		return
+
 doCrawl = (identifier, limit, seeds) ->
 	batchId = 
 	seed = (callback) ->
 		seedData = {}
-		seedData.identifier = identifier
+		seedData.id = identifier
 		seedData.urls = seeds
 		seeder.doCreate null, seedData, callback
 		
@@ -79,12 +80,6 @@ doCrawl = (identifier, limit, seeds) ->
 
 	nutchJobs = (counter, callback) ->
 		async.series [generate, fetch, parse, updateDb, solrIndex, deleteDuplicates],  (err, results) ->
-			nutchUtils.eventEmitter.removeAllListeners db.jobStatus.GENERATOR
-			nutchUtils.eventEmitter.removeAllListeners db.jobStatus.FETCHER
-			nutchUtils.eventEmitter.removeAllListeners db.jobStatus.PARSER
-			nutchUtils.eventEmitter.removeAllListeners db.jobStatus.UPDATEDB
-			nutchUtils.eventEmitter.removeAllListeners db.jobStatus.SOLRINDEX
-			nutchUtils.eventEmitter.removeAllListeners db.jobStatus.SOLRDELETEDUPS
 			callback err
 
 	processLoop = (callback) ->
@@ -100,9 +95,6 @@ doCrawl = (identifier, limit, seeds) ->
 	return
 
 extractCrawlerParameters = (req, next) ->
-	if !req.body 
-		next null, null, null, new restify.InvalidArgumentError("request body not found")
-		return	
 
 	identifier = req.body.identifier
 	if !identifier

@@ -58,18 +58,6 @@ updateJobStatus = (identifier, jobStatus, jobName, next) ->
 		if err
 			winston.error 'unable to update job status' 
 		next err
-populateSeeds = (callback) ->
-	if !seedDir
-		seedDir = '/tmp'
-	
-	db.get('seeds').find {}, (err, docs) ->
-		stream = fs.createWriteStream seedDir + "/seed.txt"
-		for i, doc of docs
-			stream.write doc.url + "\n"
-		stream.end()
-		callback err
-	return 
-
 
 populateJobStatus = (identifier, jobName, callback) ->
 	addJobStatus = (latestJobStatus) ->
@@ -116,9 +104,9 @@ submitHttpResponse = (identifier, res, callback) ->
 		response.identifier = identifier
 		res.status 202
 		res.send response
-		callback null
+		callback()
 	else 
-		callback null
+		callback()
 
 createLocationHeader = (res, identifier) ->
 	locationUrl = {}
@@ -160,7 +148,6 @@ emitStatusEvents = (identifier, jobStatus, jobName) ->
 configureEnvironment = () ->
 	nutchHome = nconf.get 'NUTCH_HOME'
 	javaHome = nconf.get 'JAVA_HOME'
-	seedDir = nconf.get 'NUTCH_WEB_API_SEED_DIR'
 	nutchOpts = nconf.get 'NUTCH_OPTS'
 	workingDir = nutchHome + '/bin'	
 
@@ -171,7 +158,6 @@ configureEnvironment = () ->
 		process.env.NUTCH_OPTS = nutchOpts if nutchOpts?
 	
 	configuration = {}
-	configuration.seedDir = seedDir
 	configuration.workingDir = workingDir
 	return configuration
 
@@ -201,7 +187,6 @@ generateBatchId = () ->
 	
 
 exports.updateJobStatus = updateJobStatus
-exports.populateSeeds = populateSeeds
 exports.populateJobStatus = populateJobStatus
 exports.submitHttpResponse = submitHttpResponse
 exports.createLocationHeader = createLocationHeader

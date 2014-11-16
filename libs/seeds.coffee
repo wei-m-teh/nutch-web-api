@@ -1,7 +1,9 @@
 restify = require 'restify'
 nconf = require 'nconf'
-urlResolver = require('url')
+urlResolver = require 'url'
+winston = require 'winston'
 db = require '../repositories/db.coffee'
+fs = require 'fs'
 nutchUtils = require './nutchUtils.coffee'
 ConflictError = require './errors/conflictError.coffee'
 
@@ -41,6 +43,32 @@ get = (req, res, next) ->
 		res.send response
 		next()
 
+populateSeedFile = (identifier, callback) ->
+		seedFinderParam = {}
+		seedFinderParam.id = identifier
+		db.get('seeds').find seedFinderParam, (err, docs) ->
+			if err?
+				callback err
+			else 
+				stream = fs.createWriteStream getSeedFile(identifier)
+				if docs.length > 0
+					urls = docs[0].urls
+					for i, url of urls
+						stream.write url + "\n"
+					stream.end()
+					callback()
+				else 
+					callback "seed not found for #{identifier}"
+
+removeSeedFile = (identifier) ->
+	fs.unlink getSeedFile(identifier), (err) ->
+		if err?
+			winston.err err
+
+getSeedFile = (identifier) ->
+	seedDir = nconf.get 'NUTCH_WEB_API_SEED_DIR'
+	seedDir ?= '/tmp'
+	seedDir + "/seed.#{identifier}.txt"
 
 submitHttpResponse = (res, id, next) ->	
 	sendHttpResponse = () ->
@@ -94,3 +122,6 @@ exports.create = create
 exports.doCreate = doCreate
 exports.remove = remove
 exports.update = update
+exports.populateSeedFile = populateSeedFile
+exports.removeSeedFile= removeSeedFile
+exports.getSeedFile = getSeedFile
