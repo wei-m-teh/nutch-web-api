@@ -4,7 +4,7 @@ server = require './server.coffee'
 
 environment = process.argv[2];
 if !environment
-	environment = 'dev'
+	environment = 'prod'
 nconf.file { file : './conf/env-' + environment + '.json' }
 		.argv().env()
 nconf.load()

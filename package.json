@@ -26,7 +26,8 @@
     }
   },
   "scripts": {
-    "start": "coffee app.coffee test",
+    "start": "coffee app.coffee",
+    "start-test": "coffee app.coffee test",
     "test": "grunt test"
   },
   "devDependencies": {
