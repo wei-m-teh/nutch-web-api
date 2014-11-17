@@ -1,5 +1,6 @@
 # nutch-web-api 
 ![travis ci build status](https://travis-ci.org/wei-m-teh/nutch-web-api.svg?branch=master)
+[![Coverage Status](https://coveralls.io/repos/wei-m-teh/nutch-web-api/badge.png?branch=master)](https://coveralls.io/r/wei-m-teh/nutch-web-api?branch=master)
 
 ## What is it
 **nutch-web-api** is a RESTFul API implementation for apache Nutch crawling application. 

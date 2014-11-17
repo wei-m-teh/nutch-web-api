@@ -63,5 +63,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('blanket');
   grunt.loadNpmTasks('grunt-coveralls');
   grunt.registerTask('test', ['clean', 'mochaTest', 'coveralls']);
-  grunt.registerTask('covealls-report', ['coveralls']);
+  grunt.registerTask('coveralls-report', ['coveralls']);
 };

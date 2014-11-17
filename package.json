@@ -28,7 +28,8 @@
   "scripts": {
     "start": "coffee app.coffee",
     "start-test": "coffee app.coffee test",
-    "test": "grunt test"
+    "test": "grunt test",
+    "coveralls-report": "grunt coveralls-report"
   },
   "devDependencies": {
     "blanket": "^1.1.6",
