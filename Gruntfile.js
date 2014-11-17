@@ -26,12 +26,12 @@ module.exports = function(grunt) {
       },
       coverage: {
         options: {
-          reporter: 'html-cov',
           quiet: true,
           // specify a destination file to capture the mocha
           // output (the quiet option does not suppress this)
-          reporter: 'html-cov',
-          captureFile: 'reports/coverage.html'
+          //reporter: 'html-cov',
+          reporter: 'mocha-lcov-reporter',
+          captureFile: 'reports/lcov.info'
         },
         src: ['test/**/*.coffee']
       },
@@ -43,6 +43,17 @@ module.exports = function(grunt) {
         },
         src: ['test/**/*.coffee']
       }
+    },
+    coveralls: {
+      options: {
+        // LCOV coverage file relevant to every target
+        src: 'reports/lcov.info',
+
+        // When true, grunt-coveralls will only print a warning rather than
+        // an error, to prevent CI builds from failing unnecessarily (e.g. if
+        // coveralls.io is down). Optional, defaults to false.
+        force: true
+      }
     }
   });
 
@@ -50,5 +61,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('blanket');
-  grunt.registerTask('test', ['clean', 'mochaTest']);
+  grunt.loadNpmTasks('grunt-coveralls');
+  grunt.registerTask('test', ['clean', 'mochaTest', 'coveralls']);
+  grunt.registerTask('covealls-report', ['coveralls']);
 };
