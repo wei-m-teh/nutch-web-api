@@ -1,4 +1,5 @@
 swagger = require 'swagger-node-restify'
+swe = swagger.errors
 
 # find Seed by id resource
 findSeedById = {}
@@ -6,13 +7,12 @@ findSeedByIdSpec = {}
 findSeedByIdSpec.description = "Operations about retrieving Seeds"
 findSeedByIdSpec.path = "/seeds/{seedId}"
 findSeedByIdSpec.notes = "Returns a seed resource based on the seedId"
-findSeedByIdSpec.summary = "Find seed by id"
+findSeedByIdSpec.summary = "Find seed by identifier"
 findSeedByIdSpec.method = "GET"
 findSeedByIdSpec.type = "Seed"
-findSeedByIdSpec.parameters = [ swagger.params.path("seedId", "ID of seed that needs to be fetched", "string") ]
+findSeedByIdSpec.parameters = [ swagger.params.path("seedId", "identifier for the seeds", "string") ]
 findSeedByIdSpec.nickname = "findSeedById"
 findSeedById.spec = findSeedByIdSpec
-
 
 # find all Seeds resource
 findAllSeeds = {}
@@ -30,12 +30,12 @@ findAllSeeds.spec = findAllSeedsSpec
 # create new Seed resource
 createSeed = {}
 createSeedSpec = {}
-createSeedSpec.description = "Operations about creating Seed"
+createSeedSpec.description = "Operations about creating new Seed"
 createSeedSpec.path = "/seeds"
 createSeedSpec.notes = "Creates a new Seed resources"
 createSeedSpec.summary = "Creates a new Seed resource"
 createSeedSpec.method = "POST"
-createSeedSpec.type = "Seed"
+createSeedSpec.parameters = [ swagger.params.body("Seed", "Seed object to be added to the persistence storage", "Seed") ]
 createSeedSpec.nickname = "create"
 createSeed.spec = createSeedSpec
 
@@ -59,7 +59,7 @@ crawl = {}
 crawlSpec = {}
 crawlSpec.description = "Operations about POSTing a crawl job"
 crawlSpec.path = "/crawl"
-crawlSpec.notes = "Submits a new Nutch crawl job"
+crawlSpec.notes = "Submits a new Nutch crawl job for processing"
 crawlSpec.summary = "Submits a new Nutch crawl job"
 crawlSpec.method = "POST"
 crawlSpec.type = "Crawler"
