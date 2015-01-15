@@ -51,3 +51,4 @@ Thumbs.db
 ######################
 node_modules
 reports
+.coveralls.yml
