@@ -6,4 +6,4 @@ install: npm install
 before_script: 
   - grunt chmod 
 after_success:
-  - grunt coveralls-report
+  - npm run coverall-upload
