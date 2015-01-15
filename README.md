@@ -46,6 +46,7 @@ Execute the npm command to start the web application:
 
 ## Supported HTTP Operations
 nutch-web-api supports the crawler job that performs all the nutch jobs in one call, and individual nutch job for clients who wants to invoke nutch job individually.
+For details about each API operation, please refer to the swagger document hosted on the server and port of the web application: e.g. http://localhost:4000/api-docs
 
 ### Invoke Nutch Crawler Job
 This API executes all the individual nutch jobs in the following order:
@@ -53,7 +54,7 @@ This API executes all the individual nutch jobs in the following order:
 Any failure encountered during the processing of these jobs will result in the job failure.
 
 - HTTP Method: **POST** 
-- Rest Endpoint: http://localhost:4000/nutch/crawl
+- REST Endpoint: http://localhost:4000/nutch/crawl
 - Sample Request Payload:
 
 ```json
