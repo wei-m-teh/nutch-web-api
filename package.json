@@ -30,7 +30,8 @@
     "start": "coffee app.coffee",
     "start-test": "coffee app.coffee test",
     "test": "grunt test",
-    "coveralls-report": "grunt coveralls-report"
+    "coveralls-report": "grunt coveralls-report",
+    "coverall-upload" : "cat ./reports/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "devDependencies": {
     "blanket": "^1.1.6",
